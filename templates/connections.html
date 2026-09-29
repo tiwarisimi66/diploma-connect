@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}My Network — DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="connections-page">
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="h3 fw-bold mb-1"><i class="bi bi-diagram-3-fill text-primary me-2"></i>My Network</h2>
+            <p class="text-muted mb-0">Manage your polytechnic peer connections, incoming invitations, and sent requests.</p>
+        </div>
+        <a href="{{ url_for('discover_students') }}" class="btn btn-primary">
+            <i class="bi bi-person-plus me-1"></i> Discover Students
+        </a>
+    </div>
+
+    <!-- NETWORK TABS -->
+    <ul class="nav nav-pills mb-4" id="networkTab" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active fw-semibold" id="connected-tab" data-bs-toggle="pill" data-bs-target="#connected" type="button">
+                <i class="bi bi-people me-1"></i> Connections
+                <span class="badge bg-primary text-white ms-1">{{ connected|length }}</span>
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-semibold" id="incoming-tab" data-bs-toggle="pill" data-bs-target="#incoming" type="button">
+                <i class="bi bi-inbox me-1"></i> Received Requests
+                {% if incoming|length > 0 %}
+                    <span class="badge bg-danger ms-1">{{ incoming|length }}</span>
+                {% else %}
+                    <span class="badge bg-light text-muted ms-1">0</span>
+                {% endif %}
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-semibold" id="outgoing-tab" data-bs-toggle="pill" data-bs-target="#outgoing" type="button">
+                <i class="bi bi-send me-1"></i> Sent Requests
+                <span class="badge bg-light text-dark ms-1">{{ outgoing|length }}</span>
+            </button>
+        </li>
+    </ul>
+
+    <!-- TAB CONTENTS -->
+    <div class="tab-content" id="networkTabContent">
+        <!-- 1. CONNECTED STUDENTS -->
+        <div class="tab-pane fade show active" id="connected">
+            {% if connected %}
+                <div class="row g-3">
+                    {% for person in connected %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="dashboard-card h-100 p-3 text-center d-flex flex-column justify-content-between">
+                            <div>
+                                <a href="{{ url_for('student_profile', user_id=person['user_id']) }}">
+                                    {% if person['profile_photo'] %}
+                                        <img src="{{ url_for('static', filename='uploads/' + person['profile_photo']) }}" class="student-avatar-lg mx-auto mb-2" alt="{{ person['name'] }}">
+                                    {% else %}
+                                        <div class="student-avatar-fallback-lg mx-auto mb-2">{{ person['name'][0]|upper }}</div>
+                                    {% endif %}
+                                </a>
+                                <h5 class="fw-bold mb-1">
+                                    <a href="{{ url_for('student_profile', user_id=person['user_id']) }}" class="text-dark text-decoration-none">
+                                        {{ person['name'] }}
+                                    </a>
+                                </h5>
+                                <div class="text-muted small mb-1">{{ person['course'] or 'Diploma Student' }}</div>
+                                <div class="text-muted small mb-2"><i class="bi bi-building"></i> {{ person['college'] or 'Polytechnic' }}</div>
+                            </div>
+
+                            <div class="d-flex justify-content-center gap-2 pt-2 border-top mt-2">
+                                <a href="{{ url_for('conversation', recipient_id=person['user_id']) }}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-chat-dots-fill me-1"></i> Message
+                                </a>
+                                <a href="{{ url_for('student_profile', user_id=person['user_id']) }}" class="btn btn-sm btn-outline-secondary">
+                                    Profile
+                                </a>
+                                <form action="{{ url_for('remove_connection', connection_id=person['connection_id']) }}" method="POST" onsubmit="return confirm('Remove this connection?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove Connection">
+                                        <i class="bi bi-person-x"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="dashboard-card text-center py-5">
+                    <i class="bi bi-people text-muted fs-1 mb-2"></i>
+                    <h5>No connections yet</h5>
+                    <p class="text-muted">Start building your network by discovering and connecting with other polytechnic students!</p>
+                    <a href="{{ url_for('discover_students') }}" class="btn btn-primary btn-sm">Find Students</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- 2. INCOMING REQUESTS -->
+        <div class="tab-pane fade" id="incoming">
+            {% if incoming %}
+                <div class="row g-3">
+                    {% for person in incoming %}
+                    <div class="col-md-6">
+                        <div class="dashboard-card p-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <a href="{{ url_for('student_profile', user_id=person['user_id']) }}">
+                                    {% if person['profile_photo'] %}
+                                        <img src="{{ url_for('static', filename='uploads/' + person['profile_photo']) }}" class="student-avatar-lg" alt="{{ person['name'] }}">
+                                    {% else %}
+                                        <div class="student-avatar-fallback-lg">{{ person['name'][0]|upper }}</div>
+                                    {% endif %}
+                                </a>
+                                <div>
+                                    <h6 class="fw-bold mb-1">
+                                        <a href="{{ url_for('student_profile', user_id=person['user_id']) }}" class="text-dark text-decoration-none">
+                                            {{ person['name'] }}
+                                        </a>
+                                    </h6>
+                                    <div class="text-muted small">{{ person['course'] or 'Diploma Student' }} · {{ person['college'] or '' }}</div>
+                                    <small class="text-muted"><i class="bi bi-clock"></i> {{ person['created_at'] }}</small>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <form action="{{ url_for('accept_connection', connection_id=person['connection_id']) }}" method="POST">
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="bi bi-check-lg"></i> Accept
+                                    </button>
+                                </form>
+                                <form action="{{ url_for('reject_connection', connection_id=person['connection_id']) }}" method="POST">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-x-lg"></i> Decline
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="dashboard-card text-center py-5">
+                    <i class="bi bi-inbox text-muted fs-1 mb-2"></i>
+                    <h5>No incoming requests</h5>
+                    <p class="text-muted">You have no pending invitations at this time.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- 3. SENT REQUESTS -->
+        <div class="tab-pane fade" id="outgoing">
+            {% if outgoing %}
+                <div class="row g-3">
+                    {% for person in outgoing %}
+                    <div class="col-md-6">
+                        <div class="dashboard-card p-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <a href="{{ url_for('student_profile', user_id=person['user_id']) }}">
+                                    {% if person['profile_photo'] %}
+                                        <img src="{{ url_for('static', filename='uploads/' + person['profile_photo']) }}" class="student-avatar-lg" alt="{{ person['name'] }}">
+                                    {% else %}
+                                        <div class="student-avatar-fallback-lg">{{ person['name'][0]|upper }}</div>
+                                    {% endif %}
+                                </a>
+                                <div>
+                                    <h6 class="fw-bold mb-1">
+                                        <a href="{{ url_for('student_profile', user_id=person['user_id']) }}" class="text-dark text-decoration-none">
+                                            {{ person['name'] }}
+                                        </a>
+                                    </h6>
+                                    <div class="text-muted small">{{ person['course'] or 'Diploma Student' }} · {{ person['college'] or '' }}</div>
+                                    <small class="text-muted"><i class="bi bi-clock"></i> Sent on {{ person['created_at'] }}</small>
+                                </div>
+                            </div>
+
+                            <form action="{{ url_for('cancel_connection', connection_id=person['connection_id']) }}" method="POST">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-x-circle me-1"></i> Cancel Request
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="dashboard-card text-center py-5">
+                    <i class="bi bi-send text-muted fs-1 mb-2"></i>
+                    <h5>No pending sent requests</h5>
+                    <p class="text-muted">You have not sent any pending requests recently.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Career & Academic Opportunities — DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="opportunities-page">
+    <!-- HERO HEADER -->
+    <div class="dashboard-card mb-4 bg-gradient-brand text-white p-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h2 class="fw-bold mb-1"><i class="bi bi-briefcase-fill me-2"></i>Career & Training Opportunities</h2>
+                <p class="text-white-50 mb-0">Vetted polytechnic internships, apprentice training drives, entry jobs, and state scholarships.</p>
+            </div>
+            {% if current_user and current_user['role'] == 'admin' %}
+            <a href="{{ url_for('admin_opportunities') }}" class="btn btn-warning fw-semibold">
+                <i class="bi bi-plus-circle me-1"></i> Post Opportunity
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- TABS: ALL / SAVED / APPLIED -->
+    <ul class="nav nav-pills mb-4" id="oppTabs">
+        <li class="nav-item">
+            <a href="{{ url_for('opportunities_list', tab='all', category=category, q=q) }}" class="nav-link {% if tab == 'all' %}active{% endif %} fw-semibold">
+                <i class="bi bi-grid me-1"></i> All Listings
+                <span class="badge bg-light text-dark ms-1">{{ all_count }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('opportunities_list', tab='saved', category=category, q=q) }}" class="nav-link {% if tab == 'saved' %}active{% endif %} fw-semibold">
+                <i class="bi bi-bookmark-fill me-1"></i> Saved / Bookmarked
+                <span class="badge {% if tab == 'saved' %}bg-white text-primary{% else %}bg-primary text-white{% endif %} ms-1">{{ saved_count }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url_for('opportunities_list', tab='applied', category=category, q=q) }}" class="nav-link {% if tab == 'applied' %}active{% endif %} fw-semibold">
+                <i class="bi bi-check2-circle me-1"></i> My Applications
+                <span class="badge {% if tab == 'applied' %}bg-white text-primary{% else %}bg-primary text-white{% endif %} ms-1">{{ applied_count }}</span>
+            </a>
+        </li>
+    </ul>
+
+    <!-- FILTER & SEARCH BAR -->
+    <div class="dashboard-card mb-4 p-3">
+        <form method="GET" class="row g-2 align-items-center">
+            <input type="hidden" name="tab" value="{{ tab }}">
+            
+            <div class="col-md-7">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="q" class="form-control border-start-0" placeholder="Search by title, organization, or required skills..." value="{{ q }}">
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <select name="category" class="form-select">
+                    <option value="">All Categories</option>
+                    <option value="internship" {% if category == 'internship' %}selected{% endif %}>Internships</option>
+                    <option value="job" {% if category == 'job' %}selected{% endif %}>Jobs (Entry Level)</option>
+                    <option value="apprenticeship" {% if category == 'apprenticeship' %}selected{% endif %}>Apprenticeships (NATS)</option>
+                    <option value="scholarship" {% if category == 'scholarship' %}selected{% endif %}>Scholarships</option>
+                    <option value="training" {% if category == 'training' %}selected{% endif %}>Technical Training</option>
+                    <option value="competition" {% if category == 'competition' %}selected{% endif %}>Competitions & Hackathons</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100 fw-semibold">Filter</button>
+                {% if q or category %}
+                <a href="{{ url_for('opportunities_list', tab=tab) }}" class="btn btn-outline-secondary" title="Reset">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- OPPORTUNITIES LIST -->
+    <div class="opportunities-list">
+        {% for opp in opportunities %}
+        <div class="dashboard-card mb-3 p-4 opportunity-card">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+                <div>
+                    <span class="badge 
+                        {% if opp['category'] == 'internship' %}bg-primary-subtle text-primary border border-primary-subtle
+                        {% elif opp['category'] == 'job' %}bg-success-subtle text-success border border-success-subtle
+                        {% elif opp['category'] == 'apprenticeship' %}bg-info-subtle text-info border border-info-subtle
+                        {% elif opp['category'] == 'scholarship' %}bg-warning-subtle text-dark border border-warning-subtle
+                        {% else %}bg-secondary-subtle text-secondary border{% endif %} text-capitalize mb-2 px-2 py-1">
+                        {{ opp['category'] }}
+                    </span>
+                    <h5 class="fw-bold mb-1">
+                        <a href="{{ url_for('opportunity_detail', opportunity_id=opp['id']) }}" class="text-dark text-decoration-none hover-primary">
+                            {{ opp['title'] }}
+                        </a>
+                    </h5>
+                    <div class="text-muted small">
+                        <strong>{{ opp['organization'] }}</strong> · <i class="bi bi-geo-alt me-1"></i>{{ opp['location'] or 'Online / Bihar' }}
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Bookmark Form -->
+                    <form action="{{ url_for('toggle_save_opportunity', opportunity_id=opp['id']) }}" method="POST">
+                        <button type="submit" class="btn btn-sm {% if opp['is_saved'] %}btn-warning text-dark{% else %}btn-outline-secondary{% endif %}" title="{% if opp['is_saved'] %}Saved{% else %}Save for later{% endif %}">
+                            <i class="bi {% if opp['is_saved'] %}bi-bookmark-fill{% else %}bi-bookmark{% endif %}"></i>
+                        </button>
+                    </form>
+
+                    <a href="{{ url_for('opportunity_detail', opportunity_id=opp['id']) }}" class="btn btn-sm btn-primary">
+                        View Details <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <p class="text-secondary small mb-3 text-truncate-2" style="max-height: 48px; overflow: hidden;">
+                {{ opp['description'] }}
+            </p>
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 pt-2 border-top">
+                {% if opp['skills_required'] %}
+                <div class="d-flex flex-wrap gap-1 align-items-center">
+                    <small class="text-muted me-1">Skills:</small>
+                    {% for sk in opp['skills_required'].split(',') %}
+                        <span class="badge bg-light text-secondary border small">{{ sk.strip() }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                    <span></span>
+                {% endif %}
+
+                <div class="small">
+                    {% if opp['has_applied'] %}
+                        <span class="badge bg-success"><i class="bi bi-check2"></i> Applied</span>
+                    {% endif %}
+                    <span class="text-danger ms-2"><i class="bi bi-calendar-event me-1"></i>Deadline: {{ opp['deadline'] or 'Open' }}</span>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="dashboard-card text-center py-5">
+            <i class="bi bi-briefcase text-muted fs-1 mb-2 d-block"></i>
+            <h5>No opportunities found</h5>
+            <p class="text-muted">
+                {% if tab == 'saved' %}
+                    You have not bookmarked any opportunities yet.
+                {% elif tab == 'applied' %}
+                    You haven't submitted applications through the portal yet.
+                {% else %}
+                    No current listings match your filters. Check back soon!
+                {% endif %}
+            </p>
+            <a href="{{ url_for('opportunities_list') }}" class="btn btn-outline-primary btn-sm">View All Opportunities</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Chat with {{ recipient['name'] }} — DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="conversation-page">
+    <div class="dashboard-card p-0 chat-container overflow-hidden">
+        <!-- CHAT HEADER -->
+        <div class="chat-header p-3 border-bottom d-flex justify-content-between align-items-center bg-white">
+            <div class="d-flex align-items-center gap-3">
+                <a href="{{ url_for('messages_inbox') }}" class="btn btn-sm btn-light" title="Back to inbox">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+
+                <a href="{{ url_for('student_profile', user_id=recipient['id']) }}">
+                    {% if recipient['profile_photo'] %}
+                        <img src="{{ url_for('static', filename='uploads/' + recipient['profile_photo']) }}" class="student-avatar" alt="{{ recipient['name'] }}">
+                    {% else %}
+                        <div class="student-avatar-fallback">{{ recipient['name'][0]|upper }}</div>
+                    {% endif %}
+                </a>
+
+                <div>
+                    <h6 class="mb-0 fw-bold">
+                        <a href="{{ url_for('student_profile', user_id=recipient['id']) }}" class="text-dark text-decoration-none">
+                            {{ recipient['name'] }}
+                        </a>
+                    </h6>
+                    <small class="text-muted">{{ recipient['course'] or 'Diploma Student' }} · {{ recipient['college'] or '' }}</small>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('student_profile', user_id=recipient['id']) }}" class="btn btn-sm btn-outline-secondary">
+                    View Profile
+                </a>
+            </div>
+        </div>
+
+        <!-- CHAT MESSAGES THREAD -->
+        <div class="chat-messages-area p-4" id="chatMessagesArea" style="height: 480px; overflow-y: auto; background: #f8fafc;">
+            {% if messages %}
+                {% for msg in messages %}
+                    {% if msg['sender_id'] == session['user_id'] %}
+                        <!-- Sent Message (Right) -->
+                        <div class="d-flex flex-column align-items-end mb-3">
+                            <div class="chat-bubble chat-bubble-sent p-3 rounded-4 shadow-sm" style="max-width: 75%; background: #087df5; color: white;">
+                                <p class="mb-0">{{ msg['content'] }}</p>
+                            </div>
+                            <small class="text-muted mt-1" style="font-size: 0.72rem;">
+                                {{ msg['created_at'] }}
+                                {% if msg['is_read'] %}
+                                    <i class="bi bi-check2-all text-primary ms-1"></i>
+                                {% else %}
+                                    <i class="bi bi-check2 text-muted ms-1"></i>
+                                {% endif %}
+                            </small>
+                        </div>
+                    {% else %}
+                        <!-- Received Message (Left) -->
+                        <div class="d-flex flex-column align-items-start mb-3">
+                            <div class="chat-bubble chat-bubble-received p-3 rounded-4 shadow-sm bg-white border" style="max-width: 75%;">
+                                <p class="mb-0 text-dark">{{ msg['content'] }}</p>
+                            </div>
+                            <small class="text-muted mt-1" style="font-size: 0.72rem;">{{ msg['created_at'] }}</small>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-chat-heart text-muted fs-1 mb-2 d-block"></i>
+                    <h6 class="text-muted">No messages yet</h6>
+                    <p class="small text-muted">Say hello to {{ recipient['name'] }} and connect on common engineering interests!</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- CHAT INPUT FORM -->
+        <div class="chat-footer p-3 bg-white border-top">
+            {% if is_connected %}
+            <form action="{{ url_for('send_message', recipient_id=recipient['id']) }}" method="POST" class="d-flex gap-2" id="chatForm">
+                <input type="text" name="content" class="form-control rounded-pill px-4" placeholder="Type a message..." required autocomplete="off" autofocus>
+                <button type="submit" class="btn btn-primary rounded-circle" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-send-fill"></i>
+                </button>
+            </form>
+            {% else %}
+            <div class="alert alert-warning mb-0 d-flex justify-content-between align-items-center">
+                <span>You must be mutually connected with {{ recipient['name'] }} to send direct messages.</span>
+                <form action="{{ url_for('send_connection', user_id=recipient['id']) }}" method="POST">
+                    <button type="submit" class="btn btn-sm btn-primary">Send Connection Request</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto scroll to bottom of chat
+document.addEventListener("DOMContentLoaded", function() {
+    const area = document.getElementById("chatMessagesArea");
+    if (area) {
+        area.scrollTop = area.scrollHeight;
+    }
+});
+</script>
+{% endblock %}

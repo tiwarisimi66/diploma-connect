@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Events & Technical Workshops — DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="events-page">
+    <!-- HERO HEADER -->
+    <div class="dashboard-card mb-4 bg-gradient-brand text-white p-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h2 class="fw-bold mb-1"><i class="bi bi-calendar-event-fill me-2"></i>Events & Technical Workshops</h2>
+                <p class="text-white-50 mb-0">Attend state polytechnic hackathons, career webinars, CAD masterclasses, and placement talks.</p>
+            </div>
+            {% if current_user and current_user['role'] == 'admin' %}
+            <a href="{{ url_for('admin_events') }}" class="btn btn-warning fw-semibold">
+                <i class="bi bi-calendar-plus me-1"></i> Add Event
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="dashboard-card mb-4 p-3">
+        <form method="GET" class="row g-2 align-items-center">
+            <div class="col-md-7">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="q" class="form-control border-start-0" placeholder="Search events by title, organizer, or location..." value="{{ q }}">
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <select name="type" class="form-select">
+                    <option value="">All Event Modes</option>
+                    <option value="online" {% if selected_type == 'online' %}selected{% endif %}>Online / Webinar</option>
+                    <option value="offline" {% if selected_type == 'offline' %}selected{% endif %}>Offline / Campus</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100 fw-semibold">Filter</button>
+                {% if q or selected_type %}
+                <a href="{{ url_for('events_list') }}" class="btn btn-outline-secondary" title="Reset">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- EVENTS GRID -->
+    <div class="row g-3">
+        {% for ev in events %}
+        <div class="col-md-6">
+            <div class="dashboard-card h-100 p-4 d-flex flex-column justify-content-between event-card">
+                <div>
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge {% if ev['event_type'] == 'online' %}bg-info-subtle text-info border border-info-subtle{% else %}bg-success-subtle text-success border border-success-subtle{% endif %} text-uppercase px-2 py-1">
+                            <i class="bi {% if ev['event_type'] == 'online' %}bi-camera-video{% else %}bi-geo-alt{% endif %} me-1"></i>{{ ev['event_type'] }}
+                        </span>
+                        <span class="badge bg-light text-dark border">
+                            <i class="bi bi-people me-1"></i>{{ ev['attendee_count'] }} Attending
+                        </span>
+                    </div>
+
+                    <h5 class="fw-bold mb-1">
+                        <a href="{{ url_for('event_detail', event_id=ev['id']) }}" class="text-dark text-decoration-none hover-primary">
+                            {{ ev['title'] }}
+                        </a>
+                    </h5>
+                    <div class="text-muted small mb-2">By <strong>{{ ev['organizer'] }}</strong></div>
+                    
+                    <p class="text-secondary small mb-3 text-truncate-2" style="max-height: 44px; overflow: hidden;">
+                        {{ ev['description'] }}
+                    </p>
+                </div>
+
+                <div class="pt-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="small text-muted">
+                        <div><i class="bi bi-calendar3 text-primary me-1"></i>{{ ev['event_date'] }}</div>
+                        {% if ev['event_time'] %}
+                            <div><i class="bi bi-clock me-1"></i>{{ ev['event_time'] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        {% if ev['user_registration_status'] %}
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                                <i class="bi bi-check2"></i> Registered
+                            </span>
+                        {% endif %}
+                        <a href="{{ url_for('event_detail', event_id=ev['id']) }}" class="btn btn-sm btn-primary">
+                            Details <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="dashboard-card text-center py-5">
+                <i class="bi bi-calendar-x text-muted fs-1 mb-2 d-block"></i>
+                <h5>No events scheduled</h5>
+                <p class="text-muted">No upcoming events match your filter. Check back soon for webinars and workshops!</p>
+                <a href="{{ url_for('events_list') }}" class="btn btn-outline-primary btn-sm">View All Events</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

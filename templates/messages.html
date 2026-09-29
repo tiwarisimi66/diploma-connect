@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Messages — DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="messages-page">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="h3 fw-bold mb-1"><i class="bi bi-chat-dots-fill text-primary me-2"></i>Messages</h2>
+            <p class="text-muted mb-0">Direct 1-on-1 conversations with your connected diploma peers.</p>
+        </div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newChatModal">
+            <i class="bi bi-pencil-square me-1"></i> New Conversation
+        </button>
+    </div>
+
+    <!-- CONVERSATIONS LIST -->
+    <div class="dashboard-card p-0 overflow-hidden">
+        {% if conversations %}
+            <div class="list-group list-group-flush">
+                {% for conv in conversations %}
+                <a href="{{ url_for('conversation', recipient_id=conv['partner_id']) }}" class="list-group-item list-group-item-action p-3 d-flex justify-content-between align-items-center {% if conv['unread_count'] > 0 %}bg-light border-start border-4 border-primary{% endif %}">
+                    <div class="d-flex align-items-center gap-3">
+                        {% if conv['profile_photo'] %}
+                            <img src="{{ url_for('static', filename='uploads/' + conv['profile_photo']) }}" class="student-avatar-lg" alt="{{ conv['name'] }}">
+                        {% else %}
+                            <div class="student-avatar-fallback-lg">{{ conv['name'][0]|upper }}</div>
+                        {% endif %}
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <h6 class="mb-0 fw-bold text-dark">{{ conv['name'] }}</h6>
+                                {% if conv['unread_count'] > 0 %}
+                                    <span class="badge bg-primary rounded-pill">{{ conv['unread_count'] }} new</span>
+                                {% endif %}
+                            </div>
+                            <small class="text-muted d-block">{{ conv['course'] or 'Diploma Student' }} · {{ conv['college'] or '' }}</small>
+                            <p class="mb-0 small text-secondary mt-1 text-truncate" style="max-width: 450px;">
+                                {% if conv['last_sender_id'] == session['user_id'] %}
+                                    <span class="text-muted fw-semibold">You: </span>
+                                {% endif %}
+                                {{ conv['last_message'] }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <small class="text-muted d-block">{{ conv['last_time'] }}</small>
+                        <i class="bi bi-chevron-right text-muted mt-2 d-inline-block"></i>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-chat-square-text text-muted fs-1 mb-2 d-block"></i>
+                <h5>No messages yet</h5>
+                <p class="text-muted">Start a conversation with one of your connected peers.</p>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#newChatModal">
+                    Start a Chat
+                </button>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- NEW CHAT MODAL -->
+<div class="modal fade" id="newChatModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-chat-plus text-primary me-2"></i>Start Conversation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                {% if connections %}
+                    <div class="list-group list-group-flush">
+                        {% for conn_user in connections %}
+                        <a href="{{ url_for('conversation', recipient_id=conn_user['id']) }}" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3">
+                            {% if conn_user['profile_photo'] %}
+                                <img src="{{ url_for('static', filename='uploads/' + conn_user['profile_photo']) }}" class="student-avatar" alt="{{ conn_user['name'] }}">
+                            {% else %}
+                                <div class="student-avatar-fallback">{{ conn_user['name'][0]|upper }}</div>
+                            {% endif %}
+                            <div>
+                                <h6 class="mb-0 fw-semibold text-dark">{{ conn_user['name'] }}</h6>
+                                <small class="text-muted">{{ conn_user['course'] or 'Diploma Student' }} · {{ conn_user['college'] or '' }}</small>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="p-4 text-center">
+                        <p class="text-muted mb-2">You need to connect with other students before you can exchange direct messages.</p>
+                        <a href="{{ url_for('discover_students') }}" class="btn btn-sm btn-primary">Find Students to Connect</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}{{ opportunity['title'] }} — DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="opportunity-detail-page">
+    <div class="mb-3">
+        <a href="{{ url_for('opportunities_list') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Back to Opportunities
+        </a>
+    </div>
+
+    <!-- MAIN HEADER CARD -->
+    <div class="dashboard-card mb-4 p-4">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <span class="badge 
+                    {% if opportunity['category'] == 'internship' %}bg-primary-subtle text-primary border border-primary-subtle
+                    {% elif opportunity['category'] == 'job' %}bg-success-subtle text-success border border-success-subtle
+                    {% elif opportunity['category'] == 'apprenticeship' %}bg-info-subtle text-info border border-info-subtle
+                    {% elif opportunity['category'] == 'scholarship' %}bg-warning-subtle text-dark border border-warning-subtle
+                    {% else %}bg-secondary-subtle text-secondary border{% endif %} text-capitalize mb-2 px-3 py-1">
+                    {{ opportunity['category'] }}
+                </span>
+                <h1 class="h3 fw-bold mb-1">{{ opportunity['title'] }}</h1>
+                <div class="text-muted">
+                    <strong class="text-dark">{{ opportunity['organization'] }}</strong> ·
+                    <i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ opportunity['location'] or 'Location not specified' }} ·
+                    <i class="bi bi-clock me-1"></i>Posted on {{ opportunity['created_at'] }}
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <form action="{{ url_for('toggle_save_opportunity', opportunity_id=opportunity['id']) }}" method="POST">
+                    <button type="submit" class="btn {% if is_saved %}btn-warning text-dark{% else %}btn-outline-secondary{% endif %}">
+                        <i class="bi {% if is_saved %}bi-bookmark-fill{% else %}bi-bookmark{% endif %} me-1"></i>
+                        {% if is_saved %}Saved{% else %}Save{% endif %}
+                    </button>
+                </form>
+
+                {% if application %}
+                    <span class="btn btn-success disabled">
+                        <i class="bi bi-check-circle-fill me-1"></i> Applied ({{ application['status']|capitalize }})
+                    </span>
+                {% else %}
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#applyModal">
+                        <i class="bi bi-send-fill me-1"></i> Apply Now
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- DETAIL GRID -->
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <!-- DESCRIPTION -->
+            <div class="dashboard-card mb-4 p-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-file-text text-primary me-2"></i>Role / Program Overview</h5>
+                <p class="text-secondary" style="white-space: pre-line; line-height: 1.7;">{{ opportunity['description'] }}</p>
+            </div>
+
+            <!-- ELIGIBILITY & REQUIREMENTS -->
+            <div class="dashboard-card mb-4 p-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-check2-square text-success me-2"></i>Eligibility Criteria</h5>
+                <p class="text-secondary" style="white-space: pre-line;">{{ opportunity['eligibility'] or 'Open to eligible diploma students and polytechnic graduates in recognized branches.' }}</p>
+            </div>
+
+            <!-- SKILLS REQUIRED -->
+            {% if opportunity['skills_required'] %}
+            <div class="dashboard-card mb-4 p-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-tools text-primary me-2"></i>Desired Skills & Competencies</h5>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for sk in opportunity['skills_required'].split(',') %}
+                        <span class="badge bg-light text-primary border px-3 py-2 fs-6 fw-normal">{{ sk.strip() }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- RIGHT SIDEBAR: KEY METRICS -->
+        <div class="col-lg-4">
+            <div class="dashboard-card mb-4 p-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-info-circle text-primary me-2"></i>Important Details</h5>
+                
+                <div class="mb-3 pb-2 border-bottom">
+                    <small class="text-muted d-block">Application Deadline</small>
+                    <strong class="text-danger"><i class="bi bi-calendar-x me-1"></i>{{ opportunity['deadline'] or 'Rolling / Open' }}</strong>
+                </div>
+
+                <div class="mb-3 pb-2 border-bottom">
+                    <small class="text-muted d-block">Opportunity Type</small>
+                    <strong class="text-capitalize">{{ opportunity['category'] }}</strong>
+                </div>
+
+                <div class="mb-3 pb-2 border-bottom">
+                    <small class="text-muted d-block">Location / Work Mode</small>
+                    <strong>{{ opportunity['location'] or 'Bihar / Remote' }}</strong>
+                </div>
+
+                {% if opportunity['application_url'] %}
+                <div class="mt-4">
+                    <a href="{{ opportunity['application_url'] }}" target="_blank" class="btn btn-outline-primary w-100" rel="noopener">
+                        <i class="bi bi-box-arrow-up-right me-1"></i> Employer Portal
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if application %}
+            <div class="dashboard-card p-4 border border-success">
+                <h6 class="fw-bold text-success mb-2"><i class="bi bi-check-circle-fill me-1"></i>Application Status</h6>
+                <p class="small text-muted mb-2">You applied on {{ application['created_at'] }}.</p>
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 text-capitalize">
+                    Status: {{ application['status'] }}
+                </span>
+                {% if application['resume_note'] %}
+                    <div class="small text-secondary mt-2 p-2 bg-light rounded">
+                        <strong>Your Note:</strong> {{ application['resume_note'] }}
+                    </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- APPLY MODAL -->
+<div class="modal fade" id="applyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="{{ url_for('apply_opportunity', opportunity_id=opportunity['id']) }}" method="POST" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-send text-primary me-2"></i>Apply for {{ opportunity['title'] }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="small text-muted mb-3">
+                    Your DiplomaConnect student profile, academic credentials ({{ current_user['college'] }}, {{ current_user['course'] }}), and listed projects will be submitted with this application.
+                </p>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Application Statement / Pitch Note</label>
+                    <textarea name="resume_note" class="form-control" rows="4" placeholder="Briefly highlight why you are a good fit for this role and mention relevant diploma projects..." required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary px-4">Submit Application</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

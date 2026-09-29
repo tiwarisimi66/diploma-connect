@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}{{ student['name'] }} - DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+    <!-- STUDENT HEADER -->
+    <div class="profile-header">
+        <div class="profile-main">
+            <div class="profile-photo-wrapper">
+                {% if student['profile_photo'] %}
+                    <img src="{{ url_for('static', filename='uploads/' + student['profile_photo']) }}" class="profile-photo" alt="{{ student['name'] }}">
+                {% else %}
+                    <div class="profile-avatar">{{ student['name'][0]|upper }}</div>
+                {% endif %}
+            </div>
+            <div class="profile-user-info">
+                <div class="d-flex align-items-center gap-2">
+                    <h1>{{ student['name'] }}</h1>
+                    {% if student['role'] == 'admin' %}
+                        <span class="badge bg-primary">Admin</span>
+                    {% endif %}
+                </div>
+                <p>{{ student['headline'] or (student['course'] ~ ' Student') }}</p>
+                <span class="profile-location">
+                    <i class="bi bi-building"></i> {{ student['college'] or 'College not added' }}
+                    {% if student['semester'] %} · Semester {{ student['semester'] }}{% endif %}
+                </span>
+            </div>
+        </div>
+
+        <div class="profile-actions-header">
+            {% if connection and connection['status'] == 'accepted' %}
+                <span class="btn btn-outline-success disabled"><i class="bi bi-check-circle-fill"></i> Connected</span>
+                <a href="{{ url_for('conversation', recipient_id=student['id']) }}" class="btn btn-primary">
+                    <i class="bi bi-chat-dots-fill"></i> Message
+                </a>
+                <form action="{{ url_for('remove_connection', connection_id=connection['id']) }}" method="POST" class="d-inline" onsubmit="return confirm('Remove this connection?');">
+                    <button class="btn btn-outline-danger btn-sm" title="Remove Connection">
+                        <i class="bi bi-person-x"></i>
+                    </button>
+                </form>
+            {% elif connection and connection['status'] == 'pending' and connection['sender_id'] == session['user_id'] %}
+                <form action="{{ url_for('cancel_connection', connection_id=connection['id']) }}" method="POST" class="d-inline">
+                    <button class="btn btn-outline-secondary">
+                        <i class="bi bi-clock-history"></i> Cancel Request
+                    </button>
+                </form>
+            {% elif connection and connection['status'] == 'pending' and connection['receiver_id'] == session['user_id'] %}
+                <div class="d-flex gap-2">
+                    <form action="{{ url_for('accept_connection', connection_id=connection['id']) }}" method="POST">
+                        <button class="btn btn-success"><i class="bi bi-check-lg"></i> Accept</button>
+                    </form>
+                    <form action="{{ url_for('reject_connection', connection_id=connection['id']) }}" method="POST">
+                        <button class="btn btn-outline-danger"><i class="bi bi-x-lg"></i> Decline</button>
+                    </form>
+                </div>
+            {% else %}
+                <form action="{{ url_for('send_connection', user_id=student['id']) }}" method="POST">
+                    <button class="btn btn-primary">
+                        <i class="bi bi-person-plus-fill"></i> Connect
+                    </button>
+                </form>
+            {% endif %}
+
+            <!-- Dropdown for Safety / Report / Block -->
+            <div class="dropdown d-inline">
+                <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                    <li>
+                        <button class="dropdown-item text-warning" data-bs-toggle="modal" data-bs-target="#reportModal">
+                            <i class="bi bi-flag"></i> Report Student
+                        </button>
+                    </li>
+                    <li>
+                        <form action="{{ url_for('block_user', user_id=student['id']) }}" method="POST" onsubmit="return confirm('Block this student? They will not be able to message or view your interactions.');">
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="bi bi-slash-circle"></i> Block Student
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN PROFILE GRID -->
+    <div class="profile-grid">
+        <!-- LEFT COLUMN -->
+        <div>
+            <!-- ABOUT -->
+            <div class="profile-card">
+                <h2>About</h2>
+                <p>{{ student['about'] or 'This student has not written a bio yet.' }}</p>
+            </div>
+
+            <!-- ACADEMIC INFORMATION -->
+            <div class="profile-card">
+                <h2>Academic Information</h2>
+                <div class="info-grid">
+                    <div>
+                        <small>Course / Branch</small>
+                        <strong>{{ student['course'] or 'Not specified' }}</strong>
+                    </div>
+                    <div>
+                        <small>College</small>
+                        <strong>{{ student['college'] or 'Not specified' }}</strong>
+                    </div>
+                    <div>
+                        <small>University / Board</small>
+                        <strong>{{ student['university'] or 'SBTE Bihar' }}</strong>
+                    </div>
+                    <div>
+                        <small>Current Semester</small>
+                        <strong>{{ student['semester'] or 'Not specified' }}</strong>
+                    </div>
+                    <div>
+                        <small>Admission Year</small>
+                        <strong>{{ student['admission_year'] or 'Not specified' }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SKILLS -->
+            <div class="profile-card">
+                <h2>Technical & Professional Skills</h2>
+                <div class="skills-wrap">
+                    {% for s in skills %}
+                        <span class="skill-tag">
+                            <i class="bi bi-check2"></i> {{ s['skill_name'] }}
+                            <small class="text-muted">({{ s['category'] }})</small>
+                        </span>
+                    {% else %}
+                        <p class="text-muted">No skills listed yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- PROJECTS -->
+            <div class="profile-card">
+                <h2>Projects Portfolio</h2>
+                {% for proj in projects %}
+                    <div class="project-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h4>{{ proj['title'] }}</h4>
+                            <div class="project-links">
+                                {% if proj['project_url'] %}
+                                    <a href="{{ proj['project_url'] }}" target="_blank" class="btn btn-sm btn-outline-primary" rel="noopener">
+                                        <i class="bi bi-box-arrow-up-right"></i> Live
+                                    </a>
+                                {% endif %}
+                                {% if proj['github_url'] %}
+                                    <a href="{{ proj['github_url'] }}" target="_blank" class="btn btn-sm btn-outline-secondary" rel="noopener">
+                                        <i class="bi bi-github"></i> Code
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if proj['tech_stack'] %}
+                            <div class="project-tech">Tech: {{ proj['tech_stack'] }}</div>
+                        {% endif %}
+                        <p class="mt-2">{{ proj['description'] }}</p>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No projects added yet.</p>
+                {% endfor %}
+            </div>
+
+            <!-- CERTIFICATIONS -->
+            <div class="profile-card">
+                <h2>Certifications</h2>
+                {% for cert in certifications %}
+                    <div class="cert-item">
+                        <strong>{{ cert['title'] }}</strong>
+                        <div class="text-muted small">Issued by: {{ cert['issuer'] }}{% if cert['issue_date'] %} · {{ cert['issue_date'] }}{% endif %}</div>
+                        {% if cert['credential_url'] %}
+                            <a href="{{ cert['credential_url'] }}" target="_blank" class="small text-primary" rel="noopener">View Credential <i class="bi bi-arrow-up-right"></i></a>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No certifications added yet.</p>
+                {% endfor %}
+            </div>
+
+            <!-- ACHIEVEMENTS -->
+            <div class="profile-card">
+                <h2>Achievements & Honors</h2>
+                {% for ach in achievements %}
+                    <div class="ach-item">
+                        <strong><i class="bi bi-trophy text-warning"></i> {{ ach['title'] }}</strong>
+                        {% if ach['year'] %}<span class="badge bg-light text-dark ms-2">{{ ach['year'] }}</span>{% endif %}
+                        <p class="small text-muted mb-0 mt-1">{{ ach['description'] }}</p>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No achievements listed yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- RIGHT SIDEBAR -->
+        <div>
+            <div class="profile-card">
+                <h2>Networking Actions</h2>
+                <div class="d-grid gap-2">
+                    {% if connection and connection['status'] == 'accepted' %}
+                        <a href="{{ url_for('conversation', recipient_id=student['id']) }}" class="btn btn-primary">
+                            <i class="bi bi-chat-dots"></i> Open Chat
+                        </a>
+                    {% endif %}
+                    <a href="{{ url_for('discover_students') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-search"></i> Back to Student Directory
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- REPORT MODAL -->
+<div class="modal fade" id="reportModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="{{ url_for('report_content') }}" method="POST" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-flag text-danger"></i> Report Student Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="reported_user_id" value="{{ student['id'] }}">
+                <div class="mb-3">
+                    <label class="form-label">Reason for reporting</label>
+                    <textarea name="reason" class="form-control" rows="3" required placeholder="Describe the issue (inappropriate content, harassment, fake profile, etc.)"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger">Submit Report</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

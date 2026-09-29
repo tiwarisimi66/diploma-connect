@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications — DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="notifications-page">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="h3 fw-bold mb-1"><i class="bi bi-bell-fill text-primary me-2"></i>Notifications</h2>
+            <p class="text-muted mb-0">Stay informed about connection requests, likes, comments, and application updates.</p>
+        </div>
+        {% if notifications %}
+        <form action="{{ url_for('mark_all_notifications_read') }}" method="POST">
+            <button type="submit" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-check2-all me-1"></i> Mark All as Read
+            </button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="dashboard-card p-0 overflow-hidden">
+        {% if notifications %}
+            <div class="list-group list-group-flush">
+                {% for n in notifications %}
+                <div class="list-group-item p-3 d-flex justify-content-between align-items-center {% if not n['is_read'] %}bg-light border-start border-4 border-primary{% endif %}">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="notif-icon-circle mt-1 
+                            {% if n['type'] == 'connection_request' or n['type'] == 'connection_accepted' %}bg-primary-subtle text-primary
+                            {% elif n['type'] == 'like' %}bg-danger-subtle text-danger
+                            {% elif n['type'] == 'comment' %}bg-info-subtle text-info
+                            {% elif n['type'] == 'message' %}bg-success-subtle text-success
+                            {% elif n['type'] == 'application' %}bg-warning-subtle text-warning
+                            {% else %}bg-secondary-subtle text-secondary{% endif %}"
+                            style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+                            <i class="bi 
+                                {% if n['type'] == 'connection_request' %}bi-person-plus-fill
+                                {% elif n['type'] == 'connection_accepted' %}bi-check-circle-fill
+                                {% elif n['type'] == 'like' %}bi-heart-fill
+                                {% elif n['type'] == 'comment' %}bi-chat-left-text-fill
+                                {% elif n['type'] == 'message' %}bi-chat-dots-fill
+                                {% elif n['type'] == 'application' %}bi-briefcase-fill
+                                {% elif n['type'] == 'event' %}bi-calendar-check-fill
+                                {% else %}bi-bell-fill{% endif %}"></i>
+                        </div>
+
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <h6 class="mb-1 fw-bold text-dark">{{ n['title'] }}</h6>
+                                {% if not n['is_read'] %}
+                                    <span class="badge bg-primary" style="font-size: 0.65rem;">New</span>
+                                {% endif %}
+                            </div>
+                            <p class="mb-1 text-secondary small">{{ n['message'] }}</p>
+                            <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ n['created_at'] }}</small>
+                            {% if n['link'] %}
+                                <a href="{{ n['link'] }}" class="small text-primary ms-3 fw-semibold text-decoration-none">
+                                    View <i class="bi bi-arrow-right"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        {% if not n['is_read'] %}
+                        <form action="{{ url_for('mark_notification_read', notification_id=n['id']) }}" method="POST">
+                            <button type="submit" class="btn btn-sm btn-light" title="Mark as read">
+                                <i class="bi bi-check2"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                        <form action="{{ url_for('delete_notification', notification_id=n['id']) }}" method="POST">
+                            <button type="submit" class="btn btn-sm btn-light text-danger" title="Delete notification">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-bell-slash text-muted fs-1 mb-2 d-block"></i>
+                <h5>No notifications yet</h5>
+                <p class="text-muted">You're all caught up! New updates and messages will appear here.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

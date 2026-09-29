@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Applicants for {{ opportunity['title'] }} — Admin DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="admin-applicants-page">
+    <div class="mb-3">
+        <a href="{{ url_for('admin_opportunities') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Back to Opportunities
+        </a>
+    </div>
+
+    <!-- HEADER CARD -->
+    <div class="dashboard-card mb-4 p-4">
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle text-capitalize mb-2">
+            {{ opportunity['category'] }}
+        </span>
+        <h2 class="h3 fw-bold mb-1">Applicants for: {{ opportunity['title'] }}</h2>
+        <div class="text-muted">
+            {{ opportunity['organization'] }} · {{ opportunity['location'] }} · Deadline: {{ opportunity['deadline'] or 'Open' }}
+        </div>
+    </div>
+
+    <!-- APPLICANTS LIST -->
+    <div class="dashboard-card p-0 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Student</th>
+                        <th>Academic Profile</th>
+                        <th>Contact</th>
+                        <th>Cover Note</th>
+                        <th>Applied On</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applicants %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                {% if app['profile_photo'] %}
+                                    <img src="{{ url_for('static', filename='uploads/' + app['profile_photo']) }}" class="student-avatar" alt="{{ app['name'] }}">
+                                {% else %}
+                                    <div class="student-avatar-fallback">{{ app['name'][0]|upper }}</div>
+                                {% endif %}
+                                <div>
+                                    <a href="{{ url_for('student_profile', user_id=app['user_id']) }}" class="fw-bold text-dark text-decoration-none">
+                                        {{ app['name'] }}
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>{{ app['course'] or 'Diploma Student' }}</div>
+                            <small class="text-muted">{{ app['college'] or '' }}</small>
+                            {% if app['cgpa'] %}
+                                <span class="badge bg-light text-dark border ms-1">CGPA: {{ app['cgpa'] }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div><i class="bi bi-envelope me-1"></i>{{ app['email'] }}</div>
+                            {% if app['phone'] %}
+                                <small class="text-muted"><i class="bi bi-telephone me-1"></i>{{ app['phone'] }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="small text-secondary" style="max-width: 250px; display: inline-block;">
+                                {{ app['resume_note'] or 'No note provided.' }}
+                            </span>
+                        </td>
+                        <td><small class="text-muted">{{ app['created_at'] }}</small></td>
+                        <td>
+                            <a href="{{ url_for('student_profile', user_id=app['user_id']) }}" class="btn btn-sm btn-outline-primary">
+                                View Profile
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            No students have applied for this opportunity yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

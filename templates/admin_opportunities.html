@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Opportunities — Admin DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="admin-opportunities-page">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <a href="{{ url_for('admin_dashboard') }}" class="small text-muted text-decoration-none">
+                <i class="bi bi-arrow-left"></i> Admin Dashboard
+            </a>
+            <h2 class="h3 fw-bold mb-0 mt-1"><i class="bi bi-briefcase-fill text-success me-2"></i>Manage Opportunities</h2>
+        </div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addOppModal">
+            <i class="bi bi-plus-circle me-1"></i> Post Opportunity
+        </button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="dashboard-card p-0 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Title & Org</th>
+                        <th>Category</th>
+                        <th>Location</th>
+                        <th>Deadline</th>
+                        <th>Applicants</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for opp in opportunities %}
+                    <tr>
+                        <td>
+                            <strong class="d-block">{{ opp['title'] }}</strong>
+                            <small class="text-muted">{{ opp['organization'] }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border text-capitalize">{{ opp['category'] }}</span>
+                        </td>
+                        <td>{{ opp['location'] or 'Bihar' }}</td>
+                        <td><span class="text-danger small">{{ opp['deadline'] or 'Open' }}</span></td>
+                        <td>
+                            <a href="{{ url_for('admin_opportunity_applicants', opportunity_id=opp['id']) }}" class="badge bg-primary text-decoration-none">
+                                {{ opp['applicants_count'] }} Applicants
+                            </a>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('opportunity_detail', opportunity_id=opp['id']) }}" class="btn btn-sm btn-outline-secondary" title="View Listing">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editOppModal-{{ opp['id'] }}" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <form action="{{ url_for('admin_delete_opportunity', opportunity_id=opp['id']) }}" method="POST" onsubmit="return confirm('Delete this opportunity?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- EDIT MODAL -->
+                    <div class="modal fade" id="editOppModal-{{ opp['id'] }}" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <form action="{{ url_for('admin_edit_opportunity', opportunity_id=opp['id']) }}" method="POST" class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Edit Opportunity #{{ opp['id'] }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-8">
+                                            <label class="form-label">Title *</label>
+                                            <input type="text" name="title" class="form-control" value="{{ opp['title'] }}" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Category *</label>
+                                            <select name="category" class="form-select">
+                                                <option value="internship" {% if opp['category'] == 'internship' %}selected{% endif %}>Internship</option>
+                                                <option value="job" {% if opp['category'] == 'job' %}selected{% endif %}>Job</option>
+                                                <option value="apprenticeship" {% if opp['category'] == 'apprenticeship' %}selected{% endif %}>Apprenticeship</option>
+                                                <option value="scholarship" {% if opp['category'] == 'scholarship' %}selected{% endif %}>Scholarship</option>
+                                                <option value="training" {% if opp['category'] == 'training' %}selected{% endif %}>Training</option>
+                                                <option value="competition" {% if opp['category'] == 'competition' %}selected{% endif %}>Competition</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Organization *</label>
+                                            <input type="text" name="organization" class="form-control" value="{{ opp['organization'] }}" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Location</label>
+                                            <input type="text" name="location" class="form-control" value="{{ opp['location'] or '' }}">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label">Description *</label>
+                                            <textarea name="description" class="form-control" rows="4" required>{{ opp['description'] }}</textarea>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Eligibility Criteria</label>
+                                            <input type="text" name="eligibility" class="form-control" value="{{ opp['eligibility'] or '' }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Skills Required (comma-separated)</label>
+                                            <input type="text" name="skills_required" class="form-control" value="{{ opp['skills_required'] or '' }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Application Deadline</label>
+                                            <input type="date" name="deadline" class="form-control" value="{{ opp['deadline'] or '' }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Employer Application URL</label>
+                                            <input type="url" name="application_url" class="form-control" value="{{ opp['application_url'] or '' }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ADD OPPORTUNITY MODAL -->
+<div class="modal fade" id="addOppModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <form action="{{ url_for('admin_add_opportunity') }}" method="POST" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Post New Opportunity</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label class="form-label">Title *</label>
+                        <input type="text" name="title" class="form-control" placeholder="e.g. Junior AutoCAD Drafter Intern" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Category *</label>
+                        <select name="category" class="form-select">
+                            <option value="internship">Internship</option>
+                            <option value="job">Job</option>
+                            <option value="apprenticeship">Apprenticeship</option>
+                            <option value="scholarship">Scholarship</option>
+                            <option value="training">Training</option>
+                            <option value="competition">Competition</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Organization *</label>
+                        <input type="text" name="organization" class="form-control" placeholder="Company or Agency name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="location" class="form-control" placeholder="e.g. Patna / Hybrid">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Description *</label>
+                        <textarea name="description" class="form-control" rows="4" placeholder="Detailed job or training description..." required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Eligibility Criteria</label>
+                        <input type="text" name="eligibility" class="form-control" placeholder="e.g. Diploma in Civil or Mechanical (3rd - 6th Sem)">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Skills Required (comma-separated)</label>
+                        <input type="text" name="skills_required" class="form-control" placeholder="e.g. AutoCAD, Site Measurement, Excel">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Application Deadline</label>
+                        <input type="date" name="deadline" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">External Application Link</label>
+                        <input type="url" name="application_url" class="form-control" placeholder="https://...">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Publish Opportunity</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

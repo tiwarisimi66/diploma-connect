@@ -1,0 +1,535 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — DiplomaConnect{% endblock %}
+
+{% block content %}
+<!-- WELCOME BANNER -->
+<section class="welcome-banner mb-4">
+    <div class="welcome-banner-content">
+        <div class="welcome-badge mb-2">
+            <i class="bi bi-stars text-warning me-1"></i> Polytechnic Student Network
+        </div>
+        <p class="welcome-greeting mb-1"><i class="bi bi-hand-wave"></i> Hello, {{ current_user['name'] }}!</p>
+        <h1 class="welcome-title mb-2">Welcome to DiplomaConnect</h1>
+        <p class="welcome-desc mb-0">Your dedicated professional networking and career platform for diploma & polytechnic students. Showcase your capstone projects, connect with peers across institutions, and discover tailored career opportunities.</p>
+    </div>
+    <div class="welcome-banner-graphic d-none d-lg-flex">
+        <div class="welcome-icon-circle">
+            <i class="bi bi-mortarboard-fill"></i>
+        </div>
+    </div>
+</section>
+
+<!-- PLATFORM METRICS -->
+<section class="stats-grid mb-4">
+    <div class="stat-card">
+        <div class="stat-icon blue">
+            <i class="bi bi-people-fill"></i>
+        </div>
+        <div class="stat-info">
+            <small>Diploma Students</small>
+            <strong>{{ total_students }}</strong>
+            <span class="growth"><i class="bi bi-person-check-fill me-1"></i>Registered in Network</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon purple">
+            <i class="bi bi-building"></i>
+        </div>
+        <div class="stat-info">
+            <small>Polytechnic Colleges</small>
+            <strong>{{ total_colleges }}</strong>
+            <span class="growth text-indigo"><i class="bi bi-patch-check-fill me-1"></i>Verified Institutions</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon green">
+            <i class="bi bi-briefcase-fill"></i>
+        </div>
+        <div class="stat-info">
+            <small>Active Opportunities</small>
+            <strong>{{ total_opportunities }}</strong>
+            <span class="growth"><i class="bi bi-lightning-charge-fill me-1"></i>Jobs, Internships & Grants</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon orange">
+            <i class="bi bi-calendar-event-fill"></i>
+        </div>
+        <div class="stat-info">
+            <small>Upcoming Events</small>
+            <strong>{{ total_events }}</strong>
+            <span class="growth text-warning"><i class="bi bi-trophy-fill me-1"></i>Hackathons & Webinars</span>
+        </div>
+    </div>
+</section>
+
+<!-- MAIN DASHBOARD GRID -->
+<div class="dashboard-grid">
+    <!-- FEED COLUMN (Left) -->
+    <div class="feed-column">
+        <!-- PROFILE COMPLETION BAR -->
+        <div class="dashboard-card mb-4 profile-completion-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="completion-icon-badge">
+                        <i class="bi bi-speedometer2 text-primary"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Profile Strength</h6>
+                        <small class="text-muted">Complete profiles receive up to 4x more peer connections and recruiter views.</small>
+                    </div>
+                </div>
+                <span class="badge bg-primary-subtle text-primary fw-bold fs-6 px-3 py-1 rounded-pill">{{ profile_completion }}%</span>
+            </div>
+            <div class="progress completion-progress mt-2" style="height: 8px;">
+                <div class="progress-bar completion-bar-gradient" role="progressbar" style="width: {{ profile_completion }}%;" aria-valuenow="{{ profile_completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            {% if profile_completion < 100 %}
+            <div class="mt-3 d-flex flex-wrap gap-2">
+                <a href="{{ url_for('profile') }}" class="btn btn-sm btn-outline-primary fw-medium">
+                    <i class="bi bi-plus-circle me-1"></i> Add Skills & Projects
+                </a>
+                <a href="{{ url_for('edit_profile') }}" class="btn btn-sm btn-light text-secondary fw-medium">
+                    <i class="bi bi-pencil me-1"></i> Edit Academic Details
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- CREATE POST CARD -->
+        <div class="dashboard-card mb-4 create-post-card p-4">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                {% if current_user['profile_photo'] %}
+                    <img src="{{ url_for('static', filename='uploads/' + current_user['profile_photo']) }}" class="post-author-img" alt="{{ current_user['name'] }}">
+                {% else %}
+                    <div class="post-author-avatar">{{ current_user['name'][0]|upper }}</div>
+                {% endif %}
+                <div>
+                    <h6 class="fw-bold mb-0">Share with the Polytechnic Community</h6>
+                    <small class="text-muted">Post a capstone project, certification update, or technical question</small>
+                </div>
+            </div>
+
+            <form action="{{ url_for('create_post') }}" method="POST">
+                <textarea name="content" class="form-control mb-3 post-input" rows="3" placeholder="What project are you building or what question do you have today?" required></textarea>
+                
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 pt-2 border-top">
+                    <div class="d-flex align-items-center gap-2">
+                        <label class="small text-muted mb-0 fw-medium"><i class="bi bi-tag-fill text-primary me-1"></i>Topic:</label>
+                        <select name="post_type" class="form-select form-select-sm post-topic-select" style="width: auto;">
+                            <option value="general">💬 General Update</option>
+                            <option value="project">⚡ Project Showcase</option>
+                            <option value="achievement">🏆 Achievement / Award</option>
+                            <option value="certification">📜 Certification</option>
+                            <option value="career">💼 Career / Question</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold">
+                        <i class="bi bi-send-fill me-1"></i> Share Post
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- POSTS FEED -->
+        <div class="posts-feed">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-newspaper me-2 text-primary"></i>Community Feed</h5>
+                <small class="text-muted">Latest updates from your network</small>
+            </div>
+
+            {% for post in posts %}
+            <div class="dashboard-card mb-4 post-card p-4" id="post-{{ post['id'] }}">
+                <!-- Post Header -->
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <a href="{{ url_for('student_profile', user_id=post['user_id']) }}">
+                            {% if post['author_photo'] %}
+                                <img src="{{ url_for('static', filename='uploads/' + post['author_photo']) }}" class="post-author-img" alt="{{ post['author_name'] }}">
+                            {% else %}
+                                <div class="post-author-avatar">{{ post['author_name'][0]|upper }}</div>
+                            {% endif %}
+                        </a>
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <a href="{{ url_for('student_profile', user_id=post['user_id']) }}" class="fw-bold text-dark text-decoration-none hover-primary">
+                                    {{ post['author_name'] }}
+                                </a>
+                            </div>
+                            <div class="text-muted small">
+                                <span>{{ post['author_course'] or 'Diploma Student' }}</span>
+                                {% if post['author_college'] %}
+                                    <span class="mx-1">·</span>
+                                    <span>{{ post['author_college'] }}</span>
+                                {% endif %}
+                            </div>
+                            <small class="text-muted d-flex align-items-center gap-1" style="font-size: 0.75rem;">
+                                <i class="bi bi-clock"></i> {{ post['created_at'] }}
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- TOPIC BADGE -->
+                        {% if post['post_type'] == 'project' %}
+                            <span class="badge badge-topic badge-topic-project"><i class="bi bi-cpu me-1"></i>Project</span>
+                        {% elif post['post_type'] == 'achievement' %}
+                            <span class="badge badge-topic badge-topic-achievement"><i class="bi bi-trophy me-1"></i>Achievement</span>
+                        {% elif post['post_type'] == 'certification' %}
+                            <span class="badge badge-topic badge-topic-certification"><i class="bi bi-patch-check me-1"></i>Certification</span>
+                        {% elif post['post_type'] == 'career' %}
+                            <span class="badge badge-topic badge-topic-career"><i class="bi bi-briefcase me-1"></i>Career</span>
+                        {% else %}
+                            <span class="badge badge-topic badge-topic-general"><i class="bi bi-chat-text me-1"></i>Update</span>
+                        {% endif %}
+
+                        <!-- POST ACTIONS DROPDOWN -->
+                        <div class="dropdown">
+                            <button class="btn btn-link text-muted p-1 rounded-circle hover-bg" type="button" data-bs-toggle="dropdown" aria-label="Post options">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                {% if post['user_id'] == current_user['id'] or current_user['role'] == 'admin' %}
+                                    <li>
+                                        <button class="dropdown-item text-primary" data-bs-toggle="modal" data-bs-target="#editPostModal-{{ post['id'] }}">
+                                            <i class="bi bi-pencil me-2"></i>Edit Post
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <form action="{{ url_for('delete_post', post_id=post['id']) }}" method="POST" onsubmit="return confirm('Delete this post?');">
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-trash me-2"></i>Delete Post
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                {% endif %}
+                                <li>
+                                    <button class="dropdown-item text-warning" data-bs-toggle="modal" data-bs-target="#reportPostModal-{{ post['id'] }}">
+                                        <i class="bi bi-flag me-2"></i>Report Post
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Post Body Content -->
+                <div class="post-body mb-3">
+                    <p class="mb-0 text-slate-800" style="white-space: pre-line; line-height: 1.6; font-size: 0.95rem;">{{ post['content'] }}</p>
+                </div>
+
+                <!-- Post Engagement Buttons -->
+                <div class="post-actions d-flex align-items-center justify-content-between pt-3 border-top">
+                    <form action="{{ url_for('like_post', post_id=post['id']) }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-sm action-btn {% if post['user_liked'] %}btn-like-active{% else %}btn-action-light{% endif %}">
+                            <i class="bi {% if post['user_liked'] %}bi-hand-thumbs-up-fill{% else %}bi-hand-thumbs-up{% endif %} me-1"></i>
+                            <span class="fw-semibold">{{ post['like_count'] }}</span> Like{% if post['like_count'] != 1 %}s{% endif %}
+                        </button>
+                    </form>
+
+                    <button class="btn btn-sm btn-action-light" type="button" data-bs-toggle="collapse" data-bs-target="#comments-{{ post['id'] }}">
+                        <i class="bi bi-chat-text me-1"></i> <span class="fw-semibold">{{ post['comment_count'] }}</span> Comment{% if post['comment_count'] != 1 %}s{% endif %}
+                    </button>
+                </div>
+
+                <!-- Comments Section (Collapsible) -->
+                <div class="collapse mt-3 pt-3 border-top" id="comments-{{ post['id'] }}">
+                    <!-- Comments List -->
+                    <div class="comments-list mb-3">
+                        {% for comment in post['comments'] %}
+                        <div class="comment-item d-flex gap-2 mb-2 p-2 rounded-3 bg-slate-50 border">
+                            <a href="{{ url_for('student_profile', user_id=comment['user_id']) }}">
+                                {% if comment['author_photo'] %}
+                                    <img src="{{ url_for('static', filename='uploads/' + comment['author_photo']) }}" class="comment-avatar-img" alt="{{ comment['author_name'] }}">
+                                {% else %}
+                                    <div class="comment-avatar-fallback">{{ comment['author_name'][0]|upper }}</div>
+                                {% endif %}
+                            </a>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="{{ url_for('student_profile', user_id=comment['user_id']) }}" class="fw-bold text-dark text-decoration-none small hover-primary">
+                                        {{ comment['author_name'] }}
+                                    </a>
+                                    {% if comment['user_id'] == current_user['id'] or post['user_id'] == current_user['id'] or current_user['role'] == 'admin' %}
+                                    <form action="{{ url_for('delete_comment', comment_id=comment['id']) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-link p-0 text-danger" title="Delete comment" style="font-size: 0.8rem;">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                                <div class="small text-slate-700 mt-1">{{ comment['content'] }}</div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-2 text-muted small">
+                            <i class="bi bi-chat-dots me-1"></i> No comments yet. Be the first to share your feedback!
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Add Comment Form -->
+                    <form action="{{ url_for('add_comment', post_id=post['id']) }}" method="POST" class="d-flex gap-2">
+                        <input type="text" name="content" class="form-control form-control-sm rounded-pill px-3" placeholder="Write a constructive comment..." required>
+                        <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">
+                            <i class="bi bi-send-fill"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Edit Post Modal -->
+            <div class="modal fade" id="editPostModal-{{ post['id'] }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <form action="{{ url_for('edit_post', post_id=post['id']) }}" method="POST" class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold">Edit Post</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <textarea name="content" class="form-control" rows="4" required>{{ post['content'] }}</textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary fw-semibold">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Report Post Modal -->
+            <div class="modal fade" id="reportPostModal-{{ post['id'] }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <form action="{{ url_for('report_content') }}" method="POST" class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-danger fw-bold"><i class="bi bi-flag-fill me-1"></i> Report Inappropriate Content</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="reported_post_id" value="{{ post['id'] }}">
+                            <label class="form-label fw-medium">Reason for reporting</label>
+                            <textarea name="reason" class="form-control" rows="3" required placeholder="Describe why this post violates community guidelines..."></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger fw-semibold">Submit Report</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% else %}
+            <div class="dashboard-card text-center py-5 p-4">
+                <div class="empty-feed-icon mx-auto mb-3">
+                    <i class="bi bi-chat-square-text text-primary fs-2"></i>
+                </div>
+                <h5 class="fw-bold mb-1">No community posts yet</h5>
+                <p class="text-muted small mb-3">Be the first to showcase an engineering project, ask a career question, or announce an achievement!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- WIDGETS COLUMN (Right) -->
+    <div class="widgets-column">
+        <!-- 1. PROFESSIONAL PROFILE SUMMARY CARD -->
+        <div class="dashboard-card mb-4 profile-summary-card overflow-hidden">
+            <div class="profile-summary-header"></div>
+            <div class="profile-summary-body text-center px-4 pb-4">
+                <div class="profile-summary-avatar-wrap">
+                    <a href="{{ url_for('profile') }}">
+                        {% if current_user['profile_photo'] %}
+                            <img src="{{ url_for('static', filename='uploads/' + current_user['profile_photo']) }}" class="profile-summary-avatar" alt="{{ current_user['name'] }}">
+                        {% else %}
+                            <div class="profile-summary-avatar-fallback">{{ current_user['name'][0:2]|upper }}</div>
+                        {% endif %}
+                    </a>
+                </div>
+
+                <h5 class="fw-bold mb-1 mt-2">
+                    <a href="{{ url_for('profile') }}" class="text-dark text-decoration-none hover-primary">{{ current_user['name'] }}</a>
+                </h5>
+                <p class="text-muted small mb-2 text-truncate">{{ current_user['headline'] or (current_user['branch'] ~ ' Student') or 'Polytechnic Student' }}</p>
+
+                <div class="d-flex align-items-center justify-content-center gap-1 text-muted small mb-3">
+                    <i class="bi bi-building text-primary"></i>
+                    <span class="text-truncate" style="max-width: 220px;">{{ current_user['college'] or 'Polytechnic Institution' }}</span>
+                </div>
+
+                <!-- Academic Chips -->
+                <div class="d-flex justify-content-center gap-1 flex-wrap mb-3">
+                    {% if current_user['branch'] %}
+                        <span class="badge bg-light text-primary border" style="font-size: 0.72rem;"><i class="bi bi-cpu me-1"></i>{{ current_user['branch'] }}</span>
+                    {% endif %}
+                    {% if current_user['semester'] %}
+                        <span class="badge bg-light text-secondary border" style="font-size: 0.72rem;">Sem {{ current_user['semester'] }}</span>
+                    {% endif %}
+                    {% if current_user['cgpa'] %}
+                        <span class="badge bg-light text-success border" style="font-size: 0.72rem;">CGPA {{ current_user['cgpa'] }}</span>
+                    {% endif %}
+                </div>
+
+                <!-- Mini Stats Strip -->
+                <div class="profile-summary-stats row g-0 py-2 border-top border-bottom mb-3 text-center">
+                    <div class="col-4 border-end">
+                        <small class="text-muted d-block" style="font-size: 0.7rem;">Network</small>
+                        <strong class="text-primary">{{ connections_count }}</strong>
+                    </div>
+                    <div class="col-4 border-end">
+                        <small class="text-muted d-block" style="font-size: 0.7rem;">Completion</small>
+                        <strong class="text-success">{{ profile_completion }}%</strong>
+                    </div>
+                    <div class="col-4">
+                        <small class="text-muted d-block" style="font-size: 0.7rem;">Role</small>
+                        <strong class="text-capitalize text-dark" style="font-size: 0.85rem;">{{ current_user['role'] }}</strong>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('profile') }}" class="btn btn-outline-primary btn-sm fw-semibold">
+                        <i class="bi bi-person me-1"></i> View Full Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. MY NETWORK SUMMARY WIDGET -->
+        <div class="dashboard-card mb-4 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0"><i class="bi bi-diagram-3 text-primary me-2"></i>My Network</h6>
+                <a href="{{ url_for('connections') }}" class="small text-primary text-decoration-none fw-medium">Manage</a>
+            </div>
+            
+            <div class="network-stat-row d-flex justify-content-between align-items-center p-2 mb-2 rounded bg-slate-50 border">
+                <span class="small text-secondary"><i class="bi bi-people-fill text-primary me-2"></i>Connected Peers</span>
+                <strong class="text-primary fs-6">{{ connections_count }}</strong>
+            </div>
+
+            <div class="network-stat-row d-flex justify-content-between align-items-center p-2 mb-3 rounded bg-slate-50 border">
+                <span class="small text-secondary"><i class="bi bi-inbox-fill text-warning me-2"></i>Pending Requests</span>
+                <strong class="text-warning fs-6">{{ pending_received_count }}</strong>
+            </div>
+
+            <a href="{{ url_for('connections') }}" class="btn btn-outline-primary btn-sm w-100 fw-semibold">
+                Manage Connection Requests
+            </a>
+        </div>
+
+        <!-- 3. SUGGESTED STUDENTS SECTION -->
+        <div class="dashboard-card mb-4 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0"><i class="bi bi-person-plus text-primary me-2"></i>Suggested Peers</h6>
+                <a href="{{ url_for('discover_students') }}" class="small text-primary text-decoration-none fw-medium">View All</a>
+            </div>
+
+            {% for student in suggested_students %}
+            <div class="suggested-student-item d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{{ url_for('student_profile', user_id=student['id']) }}">
+                        {% if student['profile_photo'] %}
+                            <img src="{{ url_for('static', filename='uploads/' + student['profile_photo']) }}" class="suggested-avatar-img" alt="{{ student['name'] }}">
+                        {% else %}
+                            <div class="suggested-avatar-fallback">{{ student['name'][0]|upper }}</div>
+                        {% endif %}
+                    </a>
+                    <div>
+                        <a href="{{ url_for('student_profile', user_id=student['id']) }}" class="fw-bold text-dark text-decoration-none small d-block hover-primary">
+                            {{ student['name'] }}
+                        </a>
+                        <small class="text-muted d-block text-truncate" style="max-width: 140px; font-size: 0.75rem;">
+                            {{ student['course'] or 'Polytechnic Student' }}
+                        </small>
+                        {% if student['college'] %}
+                        <small class="text-secondary d-block text-truncate" style="max-width: 140px; font-size: 0.7rem;">
+                            <i class="bi bi-building"></i> {{ student['college'] }}
+                        </small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <form action="{{ url_for('send_connection', user_id=student['id']) }}" method="POST">
+                    <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill px-2 py-1" title="Connect with {{ student['name'] }}">
+                        <i class="bi bi-person-plus-fill me-1"></i>Connect
+                    </button>
+                </form>
+            </div>
+            {% else %}
+            <div class="text-center py-3 text-muted small">
+                <i class="bi bi-people me-1"></i> No new peer suggestions right now.
+                <a href="{{ url_for('discover_students') }}" class="d-block mt-1 text-primary">Browse Student Directory</a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- 4. RECENT OPPORTUNITIES SPOTLIGHT -->
+        <div class="dashboard-card mb-4 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0"><i class="bi bi-briefcase text-success me-2"></i>Opportunities</h6>
+                <a href="{{ url_for('opportunities_list') }}" class="small text-primary text-decoration-none fw-medium">Explore</a>
+            </div>
+
+            {% for opp in recent_opportunities %}
+            <div class="opportunity-widget-item mb-3 pb-2 border-bottom">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="badge bg-success-subtle text-success border border-success-subtle text-capitalize" style="font-size: 0.7rem;">{{ opp['category'] }}</span>
+                    {% if opp['stipend_salary'] %}
+                        <small class="text-muted fw-medium" style="font-size: 0.72rem;">{{ opp['stipend_salary'] }}</small>
+                    {% endif %}
+                </div>
+                <h6 class="mb-1" style="font-size: 0.9rem;">
+                    <a href="{{ url_for('opportunity_detail', opportunity_id=opp['id']) }}" class="text-dark text-decoration-none fw-bold hover-primary">
+                        {{ opp['title'] }}
+                    </a>
+                </h6>
+                <div class="small text-muted mb-1"><i class="bi bi-building me-1"></i>{{ opp['organization'] }} · {{ opp['location'] }}</div>
+                <div class="small text-danger" style="font-size: 0.75rem;"><i class="bi bi-clock me-1"></i>Deadline: {{ opp['deadline'] or 'Open' }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- 5. UPCOMING EVENTS -->
+        <div class="dashboard-card mb-4 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0"><i class="bi bi-calendar-event text-warning me-2"></i>Upcoming Events</h6>
+                <a href="{{ url_for('events_list') }}" class="small text-primary text-decoration-none fw-medium">All Events</a>
+            </div>
+
+            {% for ev in upcoming_events %}
+            <div class="event-widget-item d-flex gap-3 mb-3 pb-2 border-bottom align-items-center">
+                <div class="event-date-box text-center p-2 rounded bg-slate-100 border flex-shrink-0" style="width: 50px;">
+                    <small class="text-primary fw-bold text-uppercase d-block" style="font-size: 0.65rem;">Date</small>
+                    <strong class="text-dark d-block" style="font-size: 0.85rem;">{{ ev['event_date'][:5] }}</strong>
+                </div>
+                <div class="flex-grow-1 min-w-0">
+                    <h6 class="mb-1 text-truncate" style="font-size: 0.88rem;">
+                        <a href="{{ url_for('event_detail', event_id=ev['id']) }}" class="text-dark text-decoration-none fw-bold hover-primary">
+                            {{ ev['title'] }}
+                        </a>
+                    </h6>
+                    <div class="small text-muted text-truncate" style="font-size: 0.75rem;">
+                        <i class="bi bi-person me-1"></i>{{ ev['organizer'] }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- 6. AI CAREER ASSISTANT WIDGET -->
+        <div class="dashboard-card text-center p-4 bg-gradient-ai text-white">
+            <div class="ai-sparkle-icon mx-auto mb-2">
+                <i class="bi bi-stars fs-2 text-warning"></i>
+            </div>
+            <h6 class="fw-bold mb-1">AI Career Advisor</h6>
+            <p class="small text-white-50 mb-3" style="font-size: 0.82rem;">Specialized polytechnic guidance on B.Tech LEET, SSC JE, top projects, and resume building.</p>
+            <a href="{{ url_for('ai_assistant') }}" class="btn btn-light btn-sm fw-bold px-4 rounded-pill shadow-sm">
+                Ask Questions <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

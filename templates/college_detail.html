@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}{{ college['name'] }} — DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="college-detail-page">
+    <!-- COLLEGE HEADER -->
+    <div class="dashboard-card mb-4 bg-gradient-brand text-white p-4">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <a href="{{ url_for('college_directory') }}" class="text-white-50 small text-decoration-none mb-2 d-inline-block">
+                    <i class="bi bi-arrow-left"></i> Back to Directory
+                </a>
+                <h1 class="h3 fw-bold mb-1">{{ college['name'] }}</h1>
+                <div class="text-white-50">
+                    <i class="bi bi-geo-alt-fill text-warning me-1"></i> {{ college['district'] }}, Bihar ·
+                    <i class="bi bi-award me-1"></i> {{ college['university'] or 'SBTE Bihar' }} ·
+                    {{ college['type'] }}
+                </div>
+            </div>
+
+            {% if college['website'] %}
+            <a href="{{ college['website'] }}" target="_blank" class="btn btn-light fw-semibold" rel="noopener">
+                <i class="bi bi-box-arrow-up-right me-1"></i> College Website
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- COLLEGE DETAILS & STUDENTS -->
+    <div class="row g-4">
+        <!-- LEFT: INSTITUTION INFO -->
+        <div class="col-lg-4">
+            <div class="dashboard-card mb-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-info-circle text-primary me-2"></i>About Institution</h5>
+                <p class="text-secondary small">{{ college['description'] or 'State polytechnic institution affiliated with the State Board of Technical Education (SBTE) Bihar, offering engineering diploma courses.' }}</p>
+                
+                <hr>
+
+                <div class="info-list small">
+                    <div class="mb-2">
+                        <strong class="d-block text-dark">Affiliation Board:</strong>
+                        <span class="text-muted">{{ college['university'] or 'SBTE Bihar' }}</span>
+                    </div>
+                    <div class="mb-2">
+                        <strong class="d-block text-dark">District Location:</strong>
+                        <span class="text-muted">{{ college['district'] }}, Bihar</span>
+                    </div>
+                    <div class="mb-2">
+                        <strong class="d-block text-dark">Institution Category:</strong>
+                        <span class="text-muted">{{ college['type'] }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: REGISTERED STUDENTS LIST -->
+        <div class="col-lg-8">
+            <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-people-fill text-primary me-2"></i>Enrolled Students on DiplomaConnect
+                    </h5>
+                    <span class="badge bg-primary">{{ students|length }} Students</span>
+                </div>
+
+                {% if students %}
+                    <div class="list-group list-group-flush">
+                        {% for student in students %}
+                        <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-3">
+                                <a href="{{ url_for('student_profile', user_id=student['id']) }}">
+                                    {% if student['profile_photo'] %}
+                                        <img src="{{ url_for('static', filename='uploads/' + student['profile_photo']) }}" class="student-avatar" alt="{{ student['name'] }}">
+                                    {% else %}
+                                        <div class="student-avatar-fallback">{{ student['name'][0]|upper }}</div>
+                                    {% endif %}
+                                </a>
+                                <div>
+                                    <h6 class="mb-0 fw-bold">
+                                        <a href="{{ url_for('student_profile', user_id=student['id']) }}" class="text-dark text-decoration-none">
+                                            {{ student['name'] }}
+                                        </a>
+                                    </h6>
+                                    <small class="text-muted">
+                                        {{ student['course'] or 'Diploma Student' }}
+                                        {% if student['semester'] %} · Sem {{ student['semester'] }}{% endif %}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <a href="{{ url_for('student_profile', user_id=student['id']) }}" class="btn btn-sm btn-outline-primary">
+                                View Profile
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-mortarboard text-muted fs-1 mb-2 d-block"></i>
+                        <h6>No students registered from this college yet</h6>
+                        <p class="text-muted small">Are you studying here? Update your profile college to represent your institution!</p>
+                        <a href="{{ url_for('edit_profile') }}" class="btn btn-outline-primary btn-sm">Update My College</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

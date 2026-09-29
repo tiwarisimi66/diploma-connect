@@ -1,0 +1,448 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile — DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+    <!-- PROFILE HEADER -->
+    <div class="profile-header">
+        <div class="profile-main">
+            <!-- PROFILE PHOTO WRAPPER -->
+            <div class="profile-photo-wrapper">
+                {% if user['profile_photo'] %}
+                    <img src="{{ url_for('static', filename='uploads/' + user['profile_photo']) }}" class="profile-photo" alt="{{ user['name'] }}">
+                {% else %}
+                    <div class="profile-avatar">{{ user['name'][0]|upper }}</div>
+                {% endif %}
+
+                <!-- CHANGE PHOTO FORM -->
+                <form action="{{ url_for('upload_photo') }}" method="POST" enctype="multipart/form-data" id="photoForm">
+                    <input type="file" name="profile_photo" id="profilePhotoInput" accept="image/png,image/jpeg,image/jpg,image/webp,image/gif" hidden>
+                    <label for="profilePhotoInput" class="photo-edit-button" title="Change Profile Photo">
+                        <i class="bi bi-camera-fill"></i>
+                    </label>
+                </form>
+            </div>
+
+            <!-- USER INFORMATION -->
+            <div class="profile-user-info">
+                <div class="d-flex align-items-center gap-2">
+                    <h1>{{ user['name'] }}</h1>
+                    {% if user['role'] == 'admin' %}
+                        <span class="badge bg-primary">Admin</span>
+                    {% endif %}
+                </div>
+                <p>{{ user['headline'] or (user['course'] ~ ' Student') }}</p>
+                <span class="profile-location">
+                    <i class="bi bi-building"></i> {{ user['college'] or 'College not added' }}
+                    {% if user['semester'] %} · Semester {{ user['semester'] }}{% endif %}
+                </span>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ url_for('edit_profile') }}" class="btn btn-primary">
+                <i class="bi bi-pencil-square me-1"></i> Edit Profile
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN PROFILE GRID -->
+    <div class="profile-grid">
+        <!-- LEFT COLUMN -->
+        <div>
+            <!-- ABOUT -->
+            <div class="profile-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h2 class="mb-0">About</h2>
+                    <a href="{{ url_for('edit_profile') }}" class="text-primary small text-decoration-none">Edit</a>
+                </div>
+                <p class="mb-0">{{ user['about'] or 'No bio added yet. Tell fellow students about your goals, interests, and engineering passion.' }}</p>
+            </div>
+
+            <!-- PERSONAL INFORMATION -->
+            <div class="profile-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">Personal Information</h2>
+                    <a href="{{ url_for('edit_profile') }}" class="text-primary small text-decoration-none">Edit</a>
+                </div>
+                <div class="info-grid">
+                    <div>
+                        <small>Email</small>
+                        <strong>{{ user['email'] }}</strong>
+                    </div>
+                    <div>
+                        <small>Phone</small>
+                        <strong>{{ user['phone'] or 'Not added' }}</strong>
+                    </div>
+                    <div>
+                        <small>Date of Birth</small>
+                        <strong>{{ user['dob'] or 'Not added' }}</strong>
+                    </div>
+                    <div>
+                        <small>Gender</small>
+                        <strong>{{ user['gender'] or 'Not added' }}</strong>
+                    </div>
+                    <div class="full-info">
+                        <small>Address</small>
+                        <strong>{{ user['address'] or 'Not added' }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACADEMIC INFORMATION -->
+            <div class="profile-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">Academic Information</h2>
+                    <a href="{{ url_for('edit_profile') }}" class="text-primary small text-decoration-none">Edit</a>
+                </div>
+                <div class="info-grid">
+                    <div>
+                        <small>Enrollment Number</small>
+                        <strong>{{ user['enrollment_no'] or 'Not added' }}</strong>
+                    </div>
+                    <div>
+                        <small>Admission Year</small>
+                        <strong>{{ user['admission_year'] or 'Not added' }}</strong>
+                    </div>
+                    <div>
+                        <small>Course</small>
+                        <strong>{{ user['course'] or 'Not added' }}</strong>
+                    </div>
+                    <div>
+                        <small>Branch</small>
+                        <strong>{{ user['branch'] or user['course'] or 'Not added' }}</strong>
+                    </div>
+                    <div>
+                        <small>College</small>
+                        <strong>{{ user['college'] or 'Not added' }}</strong>
+                    </div>
+                    <div>
+                        <small>University / Board</small>
+                        <strong>{{ user['university'] or 'SBTE Bihar' }}</strong>
+                    </div>
+                    <div>
+                        <small>Current Semester</small>
+                        <strong>{{ user['semester'] or 'Not added' }}</strong>
+                    </div>
+                    <div>
+                        <small>Current CGPA</small>
+                        <strong>{{ user['cgpa'] or 'Not added' }}</strong>
+                    </div>
+                    <div>
+                        <small>Total Credits</small>
+                        <strong>{{ user['total_credits'] or 'Not added' }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SKILLS SECTION -->
+            <div class="profile-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">Technical Skills</h2>
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addSkillModal">
+                        <i class="bi bi-plus-lg"></i> Add Skill
+                    </button>
+                </div>
+                <div class="skills-wrap">
+                    {% for s in skills %}
+                    <span class="skill-tag">
+                        {{ s['skill_name'] }} <small class="text-muted">({{ s['category'] }})</small>
+                        <form action="{{ url_for('delete_skill', skill_id=s['id']) }}" method="POST" class="d-inline ms-1">
+                            <button type="submit" class="border-0 bg-transparent text-danger p-0" title="Delete skill">
+                                <i class="bi bi-x-circle-fill"></i>
+                            </button>
+                        </form>
+                    </span>
+                    {% else %}
+                    <p class="text-muted mb-0">No skills added yet. Add Python, AutoCAD, PLC, Surveying, HTML, etc.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- PROJECTS PORTFOLIO -->
+            <div class="profile-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">Projects Portfolio</h2>
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addProjectModal">
+                        <i class="bi bi-plus-lg"></i> Add Project
+                    </button>
+                </div>
+
+                {% for proj in projects %}
+                <div class="project-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h4 class="mb-1">{{ proj['title'] }}</h4>
+                            {% if proj['tech_stack'] %}
+                                <span class="badge bg-light text-primary border mb-2">Tech: {{ proj['tech_stack'] }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            {% if proj['project_url'] %}
+                                <a href="{{ proj['project_url'] }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-box-arrow-up-right"></i> Live
+                                </a>
+                            {% endif %}
+                            {% if proj['github_url'] %}
+                                <a href="{{ proj['github_url'] }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-github"></i> Code
+                                </a>
+                            {% endif %}
+                            <form action="{{ url_for('delete_project', project_id=proj['id']) }}" method="POST" onsubmit="return confirm('Remove project?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <p class="mb-0 text-muted small mt-2">{{ proj['description'] }}</p>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">No projects added yet. Showcase your capstone, major or mini engineering projects!</p>
+                {% endfor %}
+            </div>
+
+            <!-- CERTIFICATIONS -->
+            <div class="profile-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">Certifications</h2>
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addCertModal">
+                        <i class="bi bi-plus-lg"></i> Add Certificate
+                    </button>
+                </div>
+
+                {% for cert in certifications %}
+                <div class="cert-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ cert['title'] }}</strong>
+                        <div class="text-muted small">
+                            Issued by: {{ cert['issuer'] }}{% if cert['issue_date'] %} · {{ cert['issue_date'] }}{% endif %}
+                        </div>
+                        {% if cert['credential_url'] %}
+                            <a href="{{ cert['credential_url'] }}" target="_blank" class="small text-primary">View Credential <i class="bi bi-arrow-up-right"></i></a>
+                        {% endif %}
+                    </div>
+                    <form action="{{ url_for('delete_certification', cert_id=cert['id']) }}" method="POST" onsubmit="return confirm('Delete certification?');">
+                        <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">Add any certifications completed from NPTEL, Coursera, MSME, or workshops.</p>
+                {% endfor %}
+            </div>
+
+            <!-- ACHIEVEMENTS -->
+            <div class="profile-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">Achievements & Honors</h2>
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addAchModal">
+                        <i class="bi bi-plus-lg"></i> Add Achievement
+                    </button>
+                </div>
+
+                {% for ach in achievements %}
+                <div class="ach-item d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong><i class="bi bi-trophy text-warning"></i> {{ ach['title'] }}</strong>
+                        {% if ach['year'] %}<span class="badge bg-light text-dark ms-2">{{ ach['year'] }}</span>{% endif %}
+                        <p class="small text-muted mb-0 mt-1">{{ ach['description'] }}</p>
+                    </div>
+                    <form action="{{ url_for('delete_achievement', achievement_id=ach['id']) }}" method="POST" onsubmit="return confirm('Delete achievement?');">
+                        <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">No achievements recorded yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div>
+            <!-- PROFILE COMPLETION -->
+            <div class="profile-card mb-4">
+                <h2>Profile Completion</h2>
+                <div class="completion-number mb-2 text-primary">{{ completion }}%</div>
+                <div class="progress mb-3" style="height: 10px;">
+                    <div class="progress-bar bg-primary" style="width: {{ completion }}%;"></div>
+                </div>
+                <p class="completion-text text-muted small">
+                    Keep your profile updated with your latest semester marks, projects, and certifications to increase visibility for internships.
+                </p>
+            </div>
+
+            <!-- QUICK LINKS -->
+            <div class="profile-card mb-4">
+                <h2>Quick Actions</h2>
+                <a href="{{ url_for('discover_students') }}" class="quick-link">
+                    <span><i class="bi bi-people me-2"></i> Find Diploma Peers</span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+                <a href="{{ url_for('opportunities_list') }}" class="quick-link">
+                    <span><i class="bi bi-briefcase me-2"></i> Browse Opportunities</span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+                <a href="{{ url_for('events_list') }}" class="quick-link">
+                    <span><i class="bi bi-calendar-event me-2"></i> View Upcoming Events</span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+                <a href="{{ url_for('ai_assistant') }}" class="quick-link">
+                    <span><i class="bi bi-stars me-2 text-warning"></i> AI Career Roadmap</span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ADD SKILL MODAL -->
+<div class="modal fade" id="addSkillModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="{{ url_for('add_skill') }}" method="POST" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Technical Skill</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Skill Name</label>
+                    <input type="text" name="skill_name" class="form-control" placeholder="e.g. Python, AutoCAD, Surveying, PLC" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Category</label>
+                    <select name="category" class="form-select">
+                        <option value="Technical">Technical</option>
+                        <option value="Software/Tools">Software / Tools</option>
+                        <option value="Hardware/Lab">Hardware / Lab</option>
+                        <option value="Soft Skills">Soft Skills</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Skill</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ADD PROJECT MODAL -->
+<div class="modal fade" id="addProjectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="{{ url_for('add_project') }}" method="POST" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Portfolio Project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Project Title</label>
+                    <input type="text" name="title" class="form-control" placeholder="e.g. Automatic Streetlight Controller" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Technologies / Tools Used</label>
+                    <input type="text" name="tech_stack" class="form-control" placeholder="e.g. Arduino, C++, LDR Sensor">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Project Description</label>
+                    <textarea name="description" class="form-control" rows="3" placeholder="Explain the project problem, methodology, and your contribution..."></textarea>
+                </div>
+                <div class="row g-2">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Live Demo / URL</label>
+                        <input type="url" name="project_url" class="form-control" placeholder="https://...">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">GitHub / Repository URL</label>
+                        <input type="url" name="github_url" class="form-control" placeholder="https://github.com/...">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Add Project</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ADD CERTIFICATE MODAL -->
+<div class="modal fade" id="addCertModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="{{ url_for('add_certification') }}" method="POST" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Certification</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Certificate Title</label>
+                    <input type="text" name="title" class="form-control" placeholder="e.g. Industrial Automation with PLC" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Issuing Organization</label>
+                    <input type="text" name="issuer" class="form-control" placeholder="e.g. MSME Tool Room / NPTEL" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Issue Date</label>
+                    <input type="text" name="issue_date" class="form-control" placeholder="e.g. July 2026">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Credential URL</label>
+                    <input type="url" name="credential_url" class="form-control" placeholder="https://...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Certification</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ADD ACHIEVEMENT MODAL -->
+<div class="modal fade" id="addAchModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="{{ url_for('add_achievement') }}" method="POST" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Achievement / Honor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Achievement Title</label>
+                    <input type="text" name="title" class="form-control" placeholder="e.g. 1st Prize in State Polytechnic TechFest" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Year</label>
+                    <input type="text" name="year" class="form-control" placeholder="e.g. 2026">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-control" rows="2" placeholder="Brief details about the achievement..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Achievement</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const photoInput = document.getElementById("profilePhotoInput");
+if (photoInput) {
+    photoInput.addEventListener("change", function () {
+        if (this.files.length > 0) {
+            document.getElementById("photoForm").submit();
+        }
+    });
+}
+</script>
+{% endblock %}

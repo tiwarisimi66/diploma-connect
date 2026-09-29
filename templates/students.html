@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Discover Students — DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="students-page">
+    <!-- HERO HEADER -->
+    <div class="dashboard-card mb-4 bg-gradient-brand text-white p-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h2 class="fw-bold mb-1"><i class="bi bi-people-fill me-2"></i>Discover Diploma Students</h2>
+                <p class="text-white-50 mb-0">Connect with fellow polytechnic engineers across Bihar and collaborate on real-world projects.</p>
+            </div>
+            <a href="{{ url_for('connections') }}" class="btn btn-light text-primary fw-semibold">
+                <i class="bi bi-diagram-3 me-1"></i> My Network
+            </a>
+        </div>
+    </div>
+
+    <!-- SEARCH & FILTER BAR -->
+    <div class="dashboard-card mb-4 p-3">
+        <form method="GET" class="row g-2 align-items-center">
+            <div class="col-lg-4 col-md-12">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="q" class="form-control border-start-0" placeholder="Search by name, skills, college..." value="{{ q }}">
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+                <select name="college" class="form-select">
+                    <option value="">All Colleges</option>
+                    {% for c in colleges %}
+                        <option value="{{ c['college'] }}" {% if selected_college == c['college'] %}selected{% endif %}>
+                            {{ c['college'] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-lg-3 col-md-4">
+                <select name="course" class="form-select">
+                    <option value="">All Branches</option>
+                    {% for cr in courses %}
+                        <option value="{{ cr['course'] }}" {% if selected_course == cr['course'] %}selected{% endif %}>
+                            {{ cr['course'] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-lg-2 col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100 fw-semibold">
+                    Filter
+                </button>
+                {% if q or selected_college or selected_course %}
+                <a href="{{ url_for('discover_students') }}" class="btn btn-outline-secondary" title="Clear Filters">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- STUDENTS LIST -->
+    <div class="students-list">
+        {% for student in students %}
+        <div class="dashboard-card mb-3 p-3 student-card">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <a href="{{ url_for('student_profile', user_id=student['id']) }}">
+                        {% if student['profile_photo'] %}
+                            <img src="{{ url_for('static', filename='uploads/' + student['profile_photo']) }}" class="student-avatar-lg" alt="{{ student['name'] }}">
+                        {% else %}
+                            <div class="student-avatar-fallback-lg">{{ student['name'][0]|upper }}</div>
+                        {% endif %}
+                    </a>
+                    <div>
+                        <h5 class="mb-1 fw-bold">
+                            <a href="{{ url_for('student_profile', user_id=student['id']) }}" class="text-dark text-decoration-none hover-primary">
+                                {{ student['name'] }}
+                            </a>
+                        </h5>
+                        <div class="text-muted small">
+                            <i class="bi bi-mortarboard me-1"></i> {{ student['course'] or 'Diploma Student' }}
+                            {% if student['semester'] %} · Sem {{ student['semester'] }}{% endif %}
+                        </div>
+                        <div class="text-muted small">
+                            <i class="bi bi-building me-1"></i> {{ student['college'] or 'Polytechnic Institution' }}
+                        </div>
+                        {% if student['skills_list'] %}
+                        <div class="mt-2 d-flex flex-wrap gap-1">
+                            {% for sk in student['skills_list'].split(',') %}
+                                <span class="badge bg-light text-primary border" style="font-size: 0.75rem;">{{ sk.strip() }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- CONNECTION ACTION BUTTON -->
+                <div class="d-flex align-items-center gap-2">
+                    {% if student['connection_status'] == 'accepted' %}
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+                            <i class="bi bi-check-circle-fill me-1"></i> Connected
+                        </span>
+                        <a href="{{ url_for('conversation', recipient_id=student['id']) }}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-chat-dots-fill"></i> Message
+                        </a>
+                    {% elif student['connection_status'] == 'pending' and student['connection_sender_id'] == session['user_id'] %}
+                        <button class="btn btn-sm btn-outline-secondary disabled">
+                            <i class="bi bi-clock-history me-1"></i> Request Sent
+                        </button>
+                    {% elif student['connection_status'] == 'pending' and student['connection_sender_id'] != session['user_id'] %}
+                        <a href="{{ url_for('connections') }}" class="btn btn-sm btn-success">
+                            <i class="bi bi-check-lg me-1"></i> Respond
+                        </a>
+                    {% else %}
+                        <form action="{{ url_for('send_connection', user_id=student['id']) }}" method="POST">
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                <i class="bi bi-person-plus me-1"></i> Connect
+                            </button>
+                        </form>
+                    {% endif %}
+
+                    <a href="{{ url_for('student_profile', user_id=student['id']) }}" class="btn btn-sm btn-light border">
+                        View Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="dashboard-card text-center py-5">
+            <i class="bi bi-people text-muted fs-1 mb-2"></i>
+            <h5>No students found</h5>
+            <p class="text-muted">Try adjusting your search criteria or filter options.</p>
+            <a href="{{ url_for('discover_students') }}" class="btn btn-outline-primary btn-sm">Clear All Filters</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event['title'] }} — DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="event-detail-page">
+    <div class="mb-3">
+        <a href="{{ url_for('events_list') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Back to Events
+        </a>
+    </div>
+
+    <!-- MAIN HEADER CARD -->
+    <div class="dashboard-card mb-4 p-4">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <span class="badge {% if event['event_type'] == 'online' %}bg-info-subtle text-info border border-info-subtle{% else %}bg-success-subtle text-success border border-success-subtle{% endif %} text-uppercase px-3 py-1 mb-2">
+                    <i class="bi {% if event['event_type'] == 'online' %}bi-camera-video{% else %}bi-geo-alt{% endif %} me-1"></i>{{ event['event_type'] }} Event
+                </span>
+                <h1 class="h3 fw-bold mb-1">{{ event['title'] }}</h1>
+                <div class="text-muted">
+                    Organized by <strong class="text-dark">{{ event['organizer'] }}</strong>
+                </div>
+            </div>
+
+            <!-- REGISTRATION BUTTON -->
+            <div>
+                <form action="{{ url_for('toggle_event_registration', event_id=event['id']) }}" method="POST">
+                    {% if registration %}
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="bi bi-x-circle me-1"></i> Cancel Registration
+                        </button>
+                    {% else %}
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-calendar-check-fill me-1"></i> Register for Event
+                        </button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- EVENT CONTENT GRID -->
+    <div class="row g-4">
+        <!-- LEFT: DESCRIPTION -->
+        <div class="col-lg-8">
+            <div class="dashboard-card mb-4 p-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-file-text text-primary me-2"></i>Event Overview & Schedule</h5>
+                <p class="text-secondary" style="white-space: pre-line; line-height: 1.7;">{{ event['description'] }}</p>
+                
+                {% if event['registration_link'] %}
+                <div class="mt-4 pt-3 border-top">
+                    <a href="{{ event['registration_link'] }}" target="_blank" class="btn btn-outline-primary" rel="noopener">
+                        <i class="bi bi-link-45deg me-1"></i> External Event / Stream Link
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- ATTENDEES LIST -->
+            <div class="dashboard-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-people-fill text-primary me-2"></i>Registered Attendees</h5>
+                    <span class="badge bg-primary">{{ attendees|length }} Attending</span>
+                </div>
+
+                {% if attendees %}
+                    <div class="row g-3">
+                        {% for att in attendees %}
+                        <div class="col-md-6">
+                            <div class="p-2 border rounded d-flex align-items-center gap-2 bg-light">
+                                <a href="{{ url_for('student_profile', user_id=att['id']) }}">
+                                    {% if att['profile_photo'] %}
+                                        <img src="{{ url_for('static', filename='uploads/' + att['profile_photo']) }}" class="student-avatar" alt="{{ att['name'] }}">
+                                    {% else %}
+                                        <div class="student-avatar-fallback">{{ att['name'][0]|upper }}</div>
+                                    {% endif %}
+                                </a>
+                                <div>
+                                    <a href="{{ url_for('student_profile', user_id=att['id']) }}" class="fw-semibold text-dark text-decoration-none small d-block">
+                                        {{ att['name'] }}
+                                    </a>
+                                    <small class="text-muted d-block">{{ att['course'] or 'Diploma Student' }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted small mb-0">Be the first to register for this event!</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- RIGHT: EVENT DETAILS -->
+        <div class="col-lg-4">
+            <div class="dashboard-card mb-4 p-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-info-circle text-primary me-2"></i>Date & Venue</h5>
+                
+                <div class="mb-3 pb-2 border-bottom">
+                    <small class="text-muted d-block">Date</small>
+                    <strong class="text-dark"><i class="bi bi-calendar3 text-primary me-1"></i>{{ event['event_date'] }}</strong>
+                </div>
+
+                <div class="mb-3 pb-2 border-bottom">
+                    <small class="text-muted d-block">Time</small>
+                    <strong class="text-dark"><i class="bi bi-clock text-primary me-1"></i>{{ event['event_time'] or 'TBD' }}</strong>
+                </div>
+
+                <div class="mb-3 pb-2 border-bottom">
+                    <small class="text-muted d-block">Mode / Venue</small>
+                    <strong><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ event['location'] or 'Online Platform' }}</strong>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted d-block">Your Status</small>
+                    {% if registration %}
+                        <span class="badge bg-success"><i class="bi bi-check2"></i> Registered (Confirmed)</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Not Registered</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

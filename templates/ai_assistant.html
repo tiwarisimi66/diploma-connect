@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}AI Career Assistant — DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="ai-assistant-page">
+    <!-- HEADER -->
+    <div class="dashboard-card mb-4 bg-gradient-ai text-white p-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <span class="badge bg-white text-primary mb-2 px-3 py-1 fw-bold">
+                    <i class="bi bi-robot me-1"></i> Specialized for Diploma & Polytechnic Students
+                </span>
+                <h1 class="h3 fw-bold mb-1">AI Career & Educational Assistant</h1>
+                <p class="text-white-50 mb-0">Get personalized roadmaps for B.Tech lateral entry, SSC JE preparation, semester project ideas, and resume tips.</p>
+            </div>
+            <div class="d-none d-md-block fs-1">
+                <i class="bi bi-stars"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- QUICK PROMPTS -->
+    <div class="dashboard-card mb-4 p-3">
+        <div class="small fw-bold text-muted mb-2"><i class="bi bi-lightning-charge-fill text-warning me-1"></i>Popular Topics for Diploma Students:</div>
+        <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-sm btn-light border prompt-btn" data-query="How does Lateral Entry to B.Tech (BCECE LE / LEET) work after diploma?">
+                🎓 B.Tech Lateral Entry (LEET)
+            </button>
+            <button class="btn btn-sm btn-light border prompt-btn" data-query="What is the preparation strategy for SSC JE and RRB JE for diploma students?">
+                🏛️ SSC JE & Govt Exams
+            </button>
+            <button class="btn btn-sm btn-light border prompt-btn" data-query="What skills and projects should a Diploma Computer Science student build?">
+                💻 CSE & Web Dev Roadmap
+            </button>
+            <button class="btn btn-sm btn-light border prompt-btn" data-query="What are the best career paths and software for Diploma Mechanical engineering?">
+                ⚙️ Mechanical Engineering & CAD
+            </button>
+            <button class="btn btn-sm btn-light border prompt-btn" data-query="What opportunities exist for Diploma Civil engineering students?">
+                🏗️ Civil Site Engineering
+            </button>
+            <button class="btn btn-sm btn-light border prompt-btn" data-query="What are the key career paths in Electrical and Electronics diploma?">
+                ⚡ Electrical & Automation
+            </button>
+            <button class="btn btn-sm btn-light border prompt-btn" data-query="How should a diploma fresher format their resume and present capstone projects?">
+                📄 Resume & Interview Tips
+            </button>
+            <button class="btn btn-sm btn-light border prompt-btn" data-query="How does NATS portal apprenticeship work and what stipend is offered?">
+                💼 NATS Apprenticeship Guide
+            </button>
+        </div>
+    </div>
+
+    <!-- ASK QUESTION FORM -->
+    <div class="dashboard-card mb-4 p-4">
+        <form method="POST" id="aiForm">
+            <div class="mb-3">
+                <label class="form-label fw-bold"><i class="bi bi-chat-quote-fill text-primary me-2"></i>Ask Your Career or Educational Question</label>
+                <textarea name="question" id="questionInput" class="form-control" rows="3" placeholder="e.g. Which skills are in demand for Diploma CSE? How to get an apprenticeship at BHEL? How to prepare for BCECE LEET?" required>{{ question }}</textarea>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="small text-muted">
+                    <i class="bi bi-shield-check text-success me-1"></i> Offline local expert engine ready. No external API key required.
+                </span>
+                <button type="submit" class="btn btn-primary px-4 fw-semibold">
+                    <i class="bi bi-stars me-1"></i> Get Guidance
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- RESPONSE CONTAINER -->
+    {% if answer %}
+    <div class="dashboard-card p-4 border border-primary shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+            <div class="d-flex align-items-center gap-2">
+                <div class="bg-primary text-white rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-0">Career Assistant Recommendation</h5>
+                    {% if topic_tag %}
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.75rem;">{{ topic_tag }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <span class="small text-muted"><i class="bi bi-check-all text-primary"></i> Verified Advice</span>
+        </div>
+
+        <div class="ai-answer-content" style="line-height: 1.8; color: #334155;">
+            {{ answer | replace('**', '<strong>') | replace('**', '</strong>') | replace('\n', '<br>') | safe }}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.querySelectorAll(".prompt-btn").forEach(btn => {
+    btn.addEventListener("click", function() {
+        document.getElementById("questionInput").value = this.getAttribute("data-query");
+        document.getElementById("aiForm").submit();
+    });
+});
+</script>
+{% endblock %}
