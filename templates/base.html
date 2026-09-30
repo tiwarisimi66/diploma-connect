@@ -26,11 +26,14 @@
         <button class="mobile-toggle-btn" id="sidebarToggle" type="button" aria-label="Toggle navigation">
             <i class="bi bi-list fs-3"></i>
         </button>
-        <div class="logo-text">
-            Diploma<span>Connect</span>
-        </div>
+        <a href="{{ url_for('home') }}" class="mobile-brand-link text-decoration-none d-flex align-items-center gap-2">
+            <div class="mobile-logo-icon">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <span class="mobile-brand-title">Diploma<span>Connect</span></span>
+        </a>
         <div class="d-flex align-items-center gap-2">
-            <a href="{{ url_for('notifications_view') }}" class="mobile-icon-btn position-relative text-dark">
+            <a href="{{ url_for('notifications_view') }}" class="mobile-icon-btn position-relative text-dark" title="Notifications">
                 <i class="bi bi-bell fs-5"></i>
                 {% if unread_notifications_count > 0 %}
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
@@ -38,7 +41,7 @@
                     </span>
                 {% endif %}
             </a>
-            <a href="{{ url_for('messages_inbox') }}" class="mobile-icon-btn position-relative text-dark">
+            <a href="{{ url_for('messages_inbox') }}" class="mobile-icon-btn position-relative text-dark" title="Messages">
                 <i class="bi bi-chat-dots fs-5"></i>
                 {% if unread_messages_count > 0 %}
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" style="font-size: 0.65rem;">
@@ -46,23 +49,40 @@
                     </span>
                 {% endif %}
             </a>
+            {% if current_user %}
+            <a href="{{ url_for('profile') }}" class="mobile-profile-link ms-1" title="Profile">
+                {% if current_user['profile_photo'] %}
+                    <img src="{{ url_for('static', filename='uploads/' + current_user['profile_photo']) }}" class="mobile-avatar-img" alt="{{ current_user['name'] }}">
+                {% else %}
+                    <div class="mobile-avatar">{{ current_user['name'][0]|upper }}</div>
+                {% endif %}
+            </a>
+            {% endif %}
         </div>
     </header>
 
+    <!-- MOBILE BACKDROP -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop d-lg-none"></div>
+
     <!-- SIDEBAR -->
     <aside class="sidebar" id="appSidebar">
-        <div class="logo-area">
-            <div class="logo-icon">
-                <i class="bi bi-mortarboard-fill"></i>
-            </div>
-            <div>
-                <div class="logo-text">
-                    Diploma<span>Connect</span>
+        <div class="logo-area justify-content-between">
+            <a href="{{ url_for('home') }}" class="d-flex align-items-center gap-2 text-decoration-none">
+                <div class="logo-icon">
+                    <i class="bi bi-mortarboard-fill"></i>
                 </div>
-                <div class="logo-subtitle">
-                    Learn • Connect • Grow
+                <div>
+                    <div class="logo-text">
+                        Diploma<span>Connect</span>
+                    </div>
+                    <div class="logo-subtitle">
+                        Learn • Connect • Grow
+                    </div>
                 </div>
-            </div>
+            </a>
+            <button class="btn btn-sm btn-link text-white-50 d-lg-none p-0" id="sidebarClose" type="button" aria-label="Close menu">
+                <i class="bi bi-x-lg fs-5"></i>
+            </button>
         </div>
 
         <nav class="sidebar-nav">
@@ -103,6 +123,16 @@
                 {% if unread_notifications_count > 0 %}
                     <span class="nav-badge bg-danger">{{ unread_notifications_count }}</span>
                 {% endif %}
+            </a>
+
+            <a href="{{ url_for('roadmap') }}" class="{% if request.path == '/roadmap' %}active{% endif %}">
+                <i class="bi bi-signpost-split-fill"></i>
+                <span>Career Roadmaps</span>
+            </a>
+
+            <a href="{{ url_for('resources') }}" class="{% if request.path == '/resources' %}active{% endif %}">
+                <i class="bi bi-journal-bookmark-fill"></i>
+                <span>Learning Hub</span>
             </a>
 
             <a href="{{ url_for('college_directory') }}" class="{% if request.path.startswith('/college') %}active{% endif %}">
@@ -151,6 +181,32 @@
                 <input type="text" name="q" placeholder="Search students, skills, colleges, branches...">
             </form>
 
+            <nav class="topbar-nav d-none d-xl-flex align-items-center gap-1">
+                <a href="{{ url_for('home') }}" class="topbar-nav-link {% if request.path == '/' %}active{% endif %}">
+                    <i class="bi bi-grid-1x2"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('connections') }}" class="topbar-nav-link position-relative {% if request.path == '/connections' %}active{% endif %}">
+                    <i class="bi bi-diagram-3"></i>
+                    <span>Network</span>
+                    {% if pending_connections_count > 0 %}
+                        <span class="topbar-badge">{{ pending_connections_count }}</span>
+                    {% endif %}
+                </a>
+                <a href="{{ url_for('opportunities_list') }}" class="topbar-nav-link {% if request.path.startswith('/opportunit') %}active{% endif %}">
+                    <i class="bi bi-briefcase"></i>
+                    <span>Opportunities</span>
+                </a>
+                <a href="{{ url_for('roadmap') }}" class="topbar-nav-link {% if request.path == '/roadmap' %}active{% endif %}">
+                    <i class="bi bi-signpost-split"></i>
+                    <span>Roadmaps</span>
+                </a>
+                <a href="{{ url_for('resources') }}" class="topbar-nav-link {% if request.path == '/resources' %}active{% endif %}">
+                    <i class="bi bi-journal-bookmark"></i>
+                    <span>Resources</span>
+                </a>
+            </nav>
+
             <div class="topbar-right">
                 <a href="{{ url_for('notifications_view') }}" class="notification text-decoration-none" title="Notifications">
                     <i class="bi bi-bell"></i>
@@ -159,7 +215,7 @@
                     {% endif %}
                 </a>
 
-                <a href="{{ url_for('messages_inbox') }}" class="notification text-decoration-none ms-2" title="Messages">
+                <a href="{{ url_for('messages_inbox') }}" class="notification text-decoration-none ms-1" title="Messages">
                     <i class="bi bi-chat-dots"></i>
                     {% if unread_messages_count > 0 %}
                         <span>{{ unread_messages_count }}</span>
@@ -179,14 +235,16 @@
 
                         <div class="top-user">
                             <strong>{{ current_user['name'] }}</strong>
-                            <small class="text-capitalize">{{ current_user['role'] }}</small>
+                            <small class="text-capitalize">{{ current_user['course'] or current_user['role'] }}</small>
                         </div>
                         <i class="bi bi-chevron-down text-muted small ms-1"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                        <li><h6 class="dropdown-header">{{ current_user['email'] }}</h6></li>
+                        <li><h6 class="dropdown-header text-truncate" style="max-width: 200px;">{{ current_user['email'] }}</h6></li>
                         <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="bi bi-person me-2"></i>My Profile</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('edit_profile') }}"><i class="bi bi-pencil-square me-2"></i>Edit Profile</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('roadmap') }}"><i class="bi bi-signpost-split me-2"></i>Career Roadmaps</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('resources') }}"><i class="bi bi-journal-bookmark me-2"></i>Learning Hub</a></li>
                         {% if current_user['role'] == 'admin' %}
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-primary" href="{{ url_for('admin_dashboard') }}"><i class="bi bi-shield-lock me-2"></i>Admin Dashboard</a></li>

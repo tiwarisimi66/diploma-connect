@@ -1,443 +1,279 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Register - DiplomaConnect</title>
-
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/auth.css') }}">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Student Account — DiplomaConnect</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom DiplomaConnect Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
 </head>
-
-<body>
+<body class="auth-body">
 
 <div class="auth-page">
-
+    <!-- LEFT BRAND SIDEBAR -->
     <div class="auth-left">
-
         <div class="auth-brand">
-
-            <i class="bi bi-mortarboard-fill"></i>
-
+            <div class="auth-logo">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
             <div>
-                <strong>
-                    Diploma<span>Connect</span>
-                </strong>
-
-                <small>
-                    Learn • Connect • Grow
-                </small>
+                <strong>Diploma<span>Connect</span></strong>
+                <small>Learn • Connect • Grow</small>
             </div>
-
         </div>
 
-        <div class="auth-message">
+        <div class="auth-message my-auto">
+            <h1>Build Your<br>Professional Future.</h1>
+            <p>The dedicated career & networking ecosystem built exclusively for Polytechnic & Diploma engineering students.</p>
 
-            <h1>
-                Build Your<br>
-                Professional Future.
-            </h1>
-
-            <p>
-                Create your professional student profile
-                and connect with the diploma community.
-            </p>
-
-            <div class="feature">
-
+            <div class="feature mb-3">
                 <i class="bi bi-people-fill"></i>
-
                 <div>
-                    <strong>Connect</strong>
-                    <small>Build your professional network.</small>
+                    <strong>Peer Network</strong>
+                    <small>Connect with diploma students from your college and across state institutions.</small>
                 </div>
-
             </div>
 
-            <div class="feature">
-
+            <div class="feature mb-3">
                 <i class="bi bi-briefcase-fill"></i>
-
                 <div>
-                    <strong>Discover Opportunities</strong>
-                    <small>Find internships and career opportunities.</small>
+                    <strong>Internships & Training</strong>
+                    <small>Find vetted polytechnic internships, NATS apprenticeships, and entry-level jobs.</small>
                 </div>
-
             </div>
 
             <div class="feature">
-
                 <i class="bi bi-stars"></i>
-
                 <div>
-                    <strong>AI Career Assistant</strong>
-                    <small>Get personalized career guidance.</small>
+                    <strong>AI Career Roadmaps</strong>
+                    <small>Get guidance on B.Tech LEET lateral entry, SSC JE preparation, and core technical skills.</small>
                 </div>
-
             </div>
-
         </div>
 
+        <div class="auth-footnote text-white-50 small mt-auto">
+            &copy; {{ now_year }} DiplomaConnect. Empowering polytechnic engineers.
+        </div>
     </div>
 
-
+    <!-- RIGHT REGISTRATION FORM -->
     <div class="auth-right">
-
-        <div class="auth-card">
-
-            <div class="auth-heading">
-
+        <div class="auth-card" style="max-width: 500px;">
+            <div class="auth-heading mb-4">
                 <h2>Create Student Account</h2>
-
-                <p>
-                    Enter your personal and academic details
-                </p>
-
+                <p class="text-muted mb-0">Join DiplomaConnect in 1 minute. Enter your essential academic details to get started.</p>
             </div>
 
-
+            <!-- FLASH ALERTS -->
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
                         <div class="error-message" style="background: {% if category == 'success' %}#ecfdf5; color: #065f46; border: 1px solid #a7f3d0;{% elif category == 'info' %}#eff6ff; color: #1e40af; border: 1px solid #bfdbfe;{% else %}#fef2f2; color: #991b1b; border: 1px solid #fecaca;{% endif %}">
-                            <i class="bi {% if category == 'success' %}bi-check-circle-fill{% elif category == 'info' %}bi-info-circle-fill{% else %}bi-exclamation-circle{% endif %}"></i>
+                            <i class="bi {% if category == 'success' %}bi-check-circle-fill{% elif category == 'info' %}bi-info-circle-fill{% else %}bi-exclamation-circle{% endif %} me-1"></i>
                             {{ message }}
                         </div>
                     {% endfor %}
                 {% endif %}
             {% endwith %}
 
-            {% if error %}
-            <div class="error-message">
-                {{ error }}
-            </div>
-            {% endif %}
-
-
-            <form method="POST">
-
-                <!-- PERSONAL INFORMATION -->
-
-                <label>Full Name</label>
-
-                <div class="input-box">
-
-                    <i class="bi bi-person"></i>
-
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Enter your full name"
-                        required
-                    >
-
+            <form method="POST" id="registerForm" onsubmit="return validateRegisterForm();">
+                <!-- 1. FULL NAME -->
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold text-secondary small">Full Name <span class="text-danger">*</span></label>
+                    <div class="input-box">
+                        <i class="bi bi-person"></i>
+                        <input type="text" name="name" placeholder="e.g. Rahul Kumar" required autofocus>
+                    </div>
                 </div>
 
-
-                <label>Email Address</label>
-
-                <div class="input-box">
-
-                    <i class="bi bi-envelope"></i>
-
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Enter your email"
-                        required
-                    >
-
+                <!-- 2. EMAIL ADDRESS -->
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold text-secondary small">Email Address <span class="text-danger">*</span></label>
+                    <div class="input-box">
+                        <i class="bi bi-envelope"></i>
+                        <input type="email" name="email" placeholder="e.g. rahul.kumar@example.com" required>
+                    </div>
                 </div>
 
-
-                <label>Phone Number</label>
-
-                <div class="input-box">
-
-                    <i class="bi bi-telephone"></i>
-
-                    <input
-                        type="tel"
-                        name="phone"
-                        placeholder="Enter your phone number"
-                        required
-                    >
-
+                <!-- 3. POLYTECHNIC COLLEGE -->
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold text-secondary small">Polytechnic College <span class="text-danger">*</span></label>
+                    <div class="input-box">
+                        <i class="bi bi-building"></i>
+                        <input type="text" name="college" list="collegeList" placeholder="Select or type your polytechnic college" required>
+                        <datalist id="collegeList">
+                            {% for col in colleges %}
+                                <option value="{{ col['name'] }}"></option>
+                            {% endfor %}
+                        </datalist>
+                    </div>
                 </div>
 
+                <!-- 4. DIPLOMA BRANCH / STREAM -->
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold text-secondary small">Diploma Branch / Stream <span class="text-danger">*</span></label>
+                    <div class="input-box">
+                        <i class="bi bi-cpu"></i>
+                        <input type="text" name="branch" list="branchList" placeholder="e.g. Computer Science, Mechanical, Civil..." required>
+                        <datalist id="branchList">
+                            <option value="Computer Science & Engineering"></option>
+                            <option value="Mechanical Engineering"></option>
+                            <option value="Civil Engineering"></option>
+                            <option value="Electrical Engineering"></option>
+                            <option value="Electronics & Communication Engineering"></option>
+                            <option value="Automobile Engineering"></option>
+                            <option value="Information Technology"></option>
+                            <option value="Chemical Engineering"></option>
+                            <option value="Agricultural Engineering"></option>
+                            <option value="Architectural Assistantship"></option>
+                        </datalist>
+                    </div>
+                </div>
 
-                <label>Password</label>
+                <!-- 5. PHONE NUMBER (OPTIONAL) -->
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold text-secondary small">Phone Number <span class="text-muted fw-normal">(Optional)</span></label>
+                    <div class="input-box">
+                        <i class="bi bi-telephone"></i>
+                        <input type="tel" name="phone" placeholder="e.g. +91 9876543210">
+                    </div>
+                </div>
 
-                <div class="password-wrapper">
-
-                    <input
-                        type="password"
-                        name="password"
-                        id="registerPassword"
-                        placeholder="Create your password"
-                        required
-                    >
+                <!-- 6. PASSWORD & CONFIRM PASSWORD IN ROW -->
+                <div class="form-group mb-3">
+                    <label>Semester</label>
                 
-                    <button
-                        type="button"
-                        class="password-toggle"
-                        onclick="togglePassword('registerPassword', this)"
-                    >
-                        <i class="bi bi-eye"></i>
-                    </button>
+                    <div class="input-box">
+                        <i class="bi bi-mortarboard"></i>
                 
+                        <select name="semester">
+                            <option>1st Semester</option>
+                            <option>2nd Semester</option>
+                            <option>3rd Semester</option>
+                            <option>4th Semester</option>
+                            <option>5th Semester</option>
+                            <option>6th Semester</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- PASSWORD -->
+<div class="form-group mb-3">
+    <label class="form-label fw-semibold text-secondary small">
+        Password <span class="text-danger">*</span>
+    </label>
+
+    <div class="input-box password-wrapper">
+        <i class="bi bi-lock"></i>
+
+        <input
+            type="password"
+            name="password"
+            id="registerPassword"
+            placeholder="Create a strong password"
+            required
+            minlength="6">
+
+        <button
+            type="button"
+            class="password-toggle"
+            onclick="togglePassword('registerPassword', this)">
+
+            <i class="bi bi-eye"></i>
+        </button>
+    </div>
+</div>
+
+<!-- CONFIRM PASSWORD -->
+<div class="form-group mb-3">
+    <label class="form-label fw-semibold text-secondary small">
+        Confirm Password <span class="text-danger">*</span>
+    </label>
+
+    <div class="input-box password-wrapper">
+        <i class="bi bi-shield-lock"></i>
+
+        <input
+            type="password"
+            name="confirm_password"
+            id="confirmPassword"
+            placeholder="Confirm your password"
+            required
+            minlength="6">
+
+        <button
+            type="button"
+            class="password-toggle"
+            onclick="togglePassword('confirmPassword', this)">
+
+            <i class="bi bi-eye"></i>
+        </button>
+    </div>
+</div>
+                    <div class="col-sm-6">
+                        <label class="form-label fw-semibold text-secondary small">Confirm Password <span class="text-danger">*</span></label>
+                        <div class="input-box password-wrapper">
+                            <i class="bi bi-shield-lock"></i>
+                            <input type="password" name="confirm_password" id="confirmPassword" placeholder="Re-enter password" required minlength="6">
+                            <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)" title="Show/Hide">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                <label>Date of Birth</label>
-
-                <div class="input-box">
-
-                    <i class="bi bi-calendar"></i>
-
-                    <input
-                        type="date"
-                        name="dob"
-                        required
-                    >
-
+                <!-- PROGRESSIVE PROFILE NOTICE -->
+                <div class="p-2 mb-3 rounded bg-slate-50 border text-muted" style="font-size: 0.78rem;">
+                    <i class="bi bi-info-circle text-primary me-1"></i>
+                    <strong>Progressive Profile:</strong> You can add your profile photo, semester, GPA, capstone projects, and technical skills right after logging in.
                 </div>
 
-
-                <label>Gender</label>
-
-                <div class="input-box">
-
-                    <i class="bi bi-person"></i>
-
-                    <select name="gender" required>
-
-                        <option value="">
-                            Select Gender
-                        </option>
-
-                        <option value="Male">
-                            Male
-                        </option>
-
-                        <option value="Female">
-                            Female
-                        </option>
-
-                        <option value="Other">
-                            Other
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <label>Address</label>
-
-                <div class="input-box">
-
-                    <i class="bi bi-geo-alt"></i>
-
-                    <input
-                        type="text"
-                        name="address"
-                        placeholder="Enter your address"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- ACADEMIC INFORMATION -->
-
-                <label>Enrollment Number</label>
-
-                <div class="input-box">
-
-                    <i class="bi bi-card-text"></i>
-
-                    <input
-                        type="text"
-                        name="enrollment_no"
-                        placeholder="Enter enrollment number"
-                        required
-                    >
-
-                </div>
-
-
-                <label>Admission Year</label>
-
-                <div class="input-box">
-
-                    <i class="bi bi-calendar-event"></i>
-
-                    <input
-                        type="number"
-                        name="admission_year"
-                        placeholder="e.g. 2024"
-                        required
-                    >
-
-                </div>
-
-
-                <label>Course</label>
-
-                <div class="input-box">
-
-                    <i class="bi bi-book"></i>
-
-                    <input
-                        type="text"
-                        name="course"
-                        placeholder="e.g. Diploma in CSE"
-                        required
-                    >
-
-                </div>
-
-
-                <label>College</label>
-
-                <div class="input-box">
-
-                    <i class="bi bi-building"></i>
-
-                    <input
-                        type="text"
-                        name="college"
-                        placeholder="Enter your college"
-                        required
-                    >
-
-                </div>
-
-
-                <label>University / Board</label>
-
-                <div class="input-box">
-
-                    <i class="bi bi-bank"></i>
-
-                    <input
-                        type="text"
-                        name="university"
-                        placeholder="Enter university or board"
-                        required
-                    >
-
-                </div>
-
-
-                <label>Current Semester</label>
-
-                <div class="input-box">
-
-                    <i class="bi bi-layers"></i>
-
-                    <input
-                        type="text"
-                        name="semester"
-                        placeholder="e.g. 6th Semester"
-                        required
-                    >
-
-                </div>
-
-
-                <label>Current CGPA</label>
-
-                <div class="input-box">
-
-                    <i class="bi bi-graph-up"></i>
-
-                    <input
-                        type="text"
-                        name="cgpa"
-                        placeholder="e.g. 7.8"
-                        required
-                    >
-
-                </div>
-
-
-                <label>Total Credits</label>
-
-                <div class="input-box">
-
-                    <i class="bi bi-award"></i>
-
-                    <input
-                        type="text"
-                        name="total_credits"
-                        placeholder="e.g. 120"
-                        required
-                    >
-
-                </div>
-
-
+                <!-- SUBMIT BUTTON -->
                 <button type="submit" class="auth-button">
-
-                    Create Account
-
+                    <span>Create Account</span>
                     <i class="bi bi-arrow-right"></i>
-
                 </button>
-
             </form>
 
-
-            <div class="auth-footer">
-
-                Already have an account?
-
-                <a href="/login">
-                    Login
-                </a>
-
+            <div class="auth-footer mt-4 text-center">
+                Already have an account? <a href="{{ url_for('login') }}" class="fw-semibold">Log in here</a>
             </div>
-
         </div>
-
     </div>
-
 </div>
+
 <script>
-
-    function togglePassword(inputId, button) {
-    
-        const input = document.getElementById(inputId);
-        const icon = button.querySelector("i");
-    
-        if (input.type === "password") {
-    
-            input.type = "text";
-    
-            icon.classList.remove("bi-eye");
-            icon.classList.add("bi-eye-slash");
-    
-        } else {
-    
-            input.type = "password";
-    
-            icon.classList.remove("bi-eye-slash");
-            icon.classList.add("bi-eye");
-    
-        }
+function togglePassword(inputId, button) {
+    const input = document.getElementById(inputId);
+    const icon = button.querySelector("i");
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("bi-eye");
+        icon.classList.add("bi-eye-slash");
+    } else {
+        input.type = "password";
+        icon.classList.remove("bi-eye-slash");
+        icon.classList.add("bi-eye");
     }
-    
-    </script>
-</body>
+}
 
+function validateRegisterForm() {
+    const pass = document.getElementById("registerPassword").value;
+    const confirm = document.getElementById("confirmPassword").value;
+    if (pass !== confirm) {
+        alert("Passwords do not match! Please check your password fields.");
+        document.getElementById("confirmPassword").focus();
+        return false;
+    }
+    return true;
+}
+</script>
+
+</body>
 </html>

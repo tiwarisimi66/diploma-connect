@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
 {% block title %}Career & Academic Opportunities — DiplomaConnect{% endblock %}
 
@@ -76,20 +76,66 @@
         </form>
     </div>
 
+    <!-- BRANCH / STREAM QUICK FILTERS -->
+    <div class="dashboard-card mb-3 p-3">
+        <div class="d-flex align-items-center flex-wrap gap-2">
+            <span class="small fw-bold text-muted text-uppercase me-1" style="letter-spacing:.04em; white-space:nowrap;">
+                <i class="bi bi-funnel-fill me-1 text-primary"></i>Branch:
+            </span>
+            <button type="button" class="branch-pill active" data-filter="all">All Branches</button>
+            <button type="button" class="branch-pill" data-filter="cse"><i class="bi bi-laptop me-1"></i>Computer Science / IT</button>
+            <button type="button" class="branch-pill" data-filter="mechanical"><i class="bi bi-gear-fill me-1"></i>Mechanical</button>
+            <button type="button" class="branch-pill" data-filter="civil"><i class="bi bi-building-fill me-1"></i>Civil</button>
+            <button type="button" class="branch-pill" data-filter="electrical"><i class="bi bi-lightning-charge-fill me-1"></i>Electrical</button>
+            <button type="button" class="branch-pill" data-filter="electronics"><i class="bi bi-cpu-fill me-1"></i>Electronics</button>
+            <button type="button" class="branch-pill" data-filter="general"><i class="bi bi-people-fill me-1"></i>All / General</button>
+        </div>
+    </div>
+
     <!-- OPPORTUNITIES LIST -->
-    <div class="opportunities-list">
+    <div class="opportunities-list" id="opportunitiesList">
         {% for opp in opportunities %}
-        <div class="dashboard-card mb-3 p-4 opportunity-card">
+        {# --- Infer branch from eligibility + skills_required + title text --- #}
+        {% set ns = namespace(branch='general') %}
+        {% set bt = ((opp['eligibility'] or '') + ' ' + (opp['skills_required'] or '') + ' ' + opp['title']) | lower %}
+        {% if 'computer' in bt or 'cse' in bt or ' it ' in bt or 'python' in bt or 'web' in bt or 'javascript' in bt or 'html' in bt or 'software' in bt or 'flask' in bt or 'sqlite' in bt %}
+            {% set ns.branch = 'cse' %}
+        {% elif 'civil' in bt or 'surveying' in bt or 'concrete' in bt or 'construction' in bt or 'site super' in bt or 'estimation' in bt or 'staad' in bt %}
+            {% set ns.branch = 'civil' %}
+        {% elif 'plc' in bt or 'scada' in bt or 'substation' in bt or ('electrical' in bt and 'electronics' not in bt) %}
+            {% set ns.branch = 'electrical' %}
+        {% elif 'electronics' in bt or 'embedded' in bt or 'pcb' in bt or 'iot' in bt or 'microcontroller' in bt or 'telecom' in bt or 'arduino' in bt %}
+            {% set ns.branch = 'electronics' %}
+        {% elif 'mechanical' in bt or 'solidworks' in bt or 'cnc' in bt or 'manufacturing' in bt or 'thermodynamics' in bt or 'autocad' in bt %}
+            {% set ns.branch = 'mechanical' %}
+        {% endif %}
+        <div class="dashboard-card mb-3 p-4 opportunity-card" data-branch="{{ ns.branch }}">
             <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
                 <div>
-                    <span class="badge 
-                        {% if opp['category'] == 'internship' %}bg-primary-subtle text-primary border border-primary-subtle
-                        {% elif opp['category'] == 'job' %}bg-success-subtle text-success border border-success-subtle
-                        {% elif opp['category'] == 'apprenticeship' %}bg-info-subtle text-info border border-info-subtle
-                        {% elif opp['category'] == 'scholarship' %}bg-warning-subtle text-dark border border-warning-subtle
-                        {% else %}bg-secondary-subtle text-secondary border{% endif %} text-capitalize mb-2 px-2 py-1">
-                        {{ opp['category'] }}
-                    </span>
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                        <span class="badge text-capitalize
+                            {% if opp['category'] == 'internship' %}bg-primary-subtle text-primary border border-primary-subtle
+                            {% elif opp['category'] == 'job' %}bg-success-subtle text-success border border-success-subtle
+                            {% elif opp['category'] == 'apprenticeship' %}bg-info-subtle text-info border border-info-subtle
+                            {% elif opp['category'] == 'scholarship' %}bg-warning-subtle text-dark border border-warning-subtle
+                            {% else %}bg-secondary-subtle text-secondary border{% endif %} px-2 py-1">
+                            {{ opp['category'] }}
+                        </span>
+                        {# Branch badge — derived from content, not invented #}
+                        {% if ns.branch == 'cse' %}
+                            <span class="branch-tag branch-tag-cse"><i class="bi bi-laptop me-1"></i>CSE / IT</span>
+                        {% elif ns.branch == 'mechanical' %}
+                            <span class="branch-tag branch-tag-mechanical"><i class="bi bi-gear-fill me-1"></i>Mechanical</span>
+                        {% elif ns.branch == 'civil' %}
+                            <span class="branch-tag branch-tag-civil"><i class="bi bi-building-fill me-1"></i>Civil</span>
+                        {% elif ns.branch == 'electrical' %}
+                            <span class="branch-tag branch-tag-electrical"><i class="bi bi-lightning-charge-fill me-1"></i>Electrical</span>
+                        {% elif ns.branch == 'electronics' %}
+                            <span class="branch-tag branch-tag-electronics"><i class="bi bi-cpu-fill me-1"></i>Electronics</span>
+                        {% else %}
+                            <span class="branch-tag branch-tag-general"><i class="bi bi-people-fill me-1"></i>All Branches</span>
+                        {% endif %}
+                    </div>
                     <h5 class="fw-bold mb-1">
                         <a href="{{ url_for('opportunity_detail', opportunity_id=opp['id']) }}" class="text-dark text-decoration-none hover-primary">
                             {{ opp['title'] }}
@@ -157,3 +203,4 @@
     </div>
 </div>
 {% endblock %}
+

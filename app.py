@@ -145,38 +145,51 @@ def register():
     if "user_id" in session:
         return redirect(url_for("home"))
 
+    conn = get_db()
+    colleges = conn.execute("SELECT name FROM colleges ORDER BY name").fetchall()
+    conn.close()
+
     if request.method == "POST":
         name = request.form.get("name", "").strip()
         email = request.form.get("email", "").strip().lower()
-        phone = request.form.get("phone", "").strip()
         password = request.form.get("password", "")
+        confirm_password = request.form.get("confirm_password", "")
+        college = request.form.get("college", "").strip()
+        branch = request.form.get("branch", "").strip()
+        phone = request.form.get("phone", "").strip()
+
+        # Backward compatibility / optional profile fields
+        course = request.form.get("course", "").strip() or (f"Diploma in {branch}" if branch else "Diploma Engineering")
+        if not branch and course:
+            branch = course.replace("Diploma in ", "").strip()
         dob = request.form.get("dob", "")
         gender = request.form.get("gender", "")
         address = request.form.get("address", "").strip()
         enrollment_no = request.form.get("enrollment_no", "").strip()
         admission_year = request.form.get("admission_year", "").strip()
-        course = request.form.get("course", "").strip()
-        branch = request.form.get("branch", "").strip() or course
-        college = request.form.get("college", "").strip()
-        university = request.form.get("university", "").strip()
+        university = request.form.get("university", "").strip() or "SBTE Bihar"
         semester = request.form.get("semester", "").strip()
         cgpa = request.form.get("cgpa", "").strip()
         total_credits = request.form.get("total_credits", "").strip()
 
         if not name or not email or not password:
             flash("Name, email, and password are required.", "danger")
-            return render_template("register.html")
+            return render_template("register.html", colleges=colleges)
+
+        if confirm_password and password != confirm_password:
+            flash("Passwords do not match. Please re-enter.", "danger")
+            return render_template("register.html", colleges=colleges)
 
         conn = get_db()
         existing = conn.execute("SELECT id FROM users WHERE email = ?", (email,)).fetchone()
         if existing:
             conn.close()
             flash("An account with this email address already exists.", "danger")
-            return render_template("register.html")
+            return render_template("register.html", colleges=colleges)
 
         hashed_password = generate_password_hash(password)
-        headline = f"Diploma Student in {course or 'Engineering'} at {college or 'Polytechnic'}"
-        about = f"Enthusiastic diploma student specializing in {course or 'technical engineering'}. Looking to network, build practical projects, and explore career opportunities."
+        headline = f"Diploma Student in {branch or course or 'Engineering'} at {college or 'Polytechnic'}"
+        about = f"Diploma student specializing in {branch or 'Engineering'}. Interested in technical projects, industry skills, and career opportunities."
 
         cursor = conn.cursor()
         cursor.execute("""
@@ -201,10 +214,10 @@ def register():
         conn.commit()
         conn.close()
 
-        flash("Registration successful! You can now log in.", "success")
+        flash("Registration successful! Complete your profile to get personalized career and peer recommendations.", "success")
         return redirect(url_for("login"))
 
-    return render_template("register.html")
+    return render_template("register.html", colleges=colleges)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -344,6 +357,34 @@ def home():
     total_opportunities = conn.execute("SELECT COUNT(*) FROM opportunities").fetchone()[0]
     total_events = conn.execute("SELECT COUNT(*) FROM events").fetchone()[0]
 
+    # Fetch user skills for skill builder & gap widget
+    user_skills_rows = conn.execute("SELECT skill_name, category FROM skills WHERE user_id = ?", (uid,)).fetchall()
+    user_skills = [s["skill_name"] for s in user_skills_rows]
+    user_skills_lower = {s.lower() for s in user_skills}
+
+    # Branch-specific recommended skills for polytechnic students
+    course_str = ((user["course"] or "") + " " + (user["branch"] or "")).lower()
+    if any(k in course_str for k in ["computer", "cse", "it", "software"]):
+        recommended_skills = ["Python", "JavaScript", "SQL", "Git & GitHub", "HTML5 & CSS3", "Data Structures", "Linux"]
+        branch_name = "Computer Science / IT"
+    elif any(k in course_str for k in ["mech", "auto", "production"]):
+        recommended_skills = ["AutoCAD 2D/3D", "SolidWorks", "CNC Programming", "Thermodynamics", "Industrial Safety", "GD&T"]
+        branch_name = "Mechanical Engineering"
+    elif any(k in course_str for k in ["civil", "construction"]):
+        recommended_skills = ["AutoCAD Civil", "Total Station & Surveying", "STAAD.Pro", "Concrete Technology", "Quantity Estimation", "Site Supervision"]
+        branch_name = "Civil Engineering"
+    elif any(k in course_str for k in ["electr"]):
+        recommended_skills = ["PLC & SCADA", "Substation Operations", "MATLAB", "Circuit Simulation", "Solar PV Design", "Electrical Wiring"]
+        branch_name = "Electrical Engineering"
+    elif any(k in course_str for k in ["ece", "electron", "telecom"]):
+        recommended_skills = ["Embedded C / Arduino", "PCB Design", "IoT Protocols", "Microcontrollers", "Digital Signal Processing", "VLSI Basics"]
+        branch_name = "Electronics Engineering"
+    else:
+        recommended_skills = ["Python", "AutoCAD", "Technical Communication", "MS Excel & Analytics", "Project Management", "Git & GitHub"]
+        branch_name = "Polytechnic Engineering"
+
+    missing_recommended = [sk for sk in recommended_skills if sk.lower() not in user_skills_lower]
+
     conn.close()
 
     return render_template(
@@ -359,7 +400,11 @@ def home():
         total_students=total_students,
         total_colleges=total_colleges,
         total_opportunities=total_opportunities,
-        total_events=total_events
+        total_events=total_events,
+        user_skills=user_skills,
+        recommended_skills=recommended_skills,
+        missing_recommended=missing_recommended,
+        branch_name=branch_name
     )
 
 
@@ -691,6 +736,7 @@ def upload_photo():
 def add_skill():
     skill_name = request.form.get("skill_name", "").strip()
     category = request.form.get("category", "Technical").strip()
+    redirect_to = request.form.get("redirect_to", "").strip()
     if skill_name:
         conn = get_db()
         conn.execute("""
@@ -700,6 +746,8 @@ def add_skill():
         conn.commit()
         conn.close()
         flash(f"Skill '{skill_name}' added!", "success")
+    if redirect_to:
+        return redirect(redirect_to)
     return redirect(url_for("profile"))
 
 
@@ -1774,6 +1822,65 @@ def ai_assistant():
 
 
 # ---------------------------------------------------------
+# CAREER ROADMAPS & LEARNING RESOURCES
+# ---------------------------------------------------------
+
+@app.route("/roadmap")
+@login_required
+def roadmap():
+    uid = session["user_id"]
+    conn = get_db()
+    user = conn.execute("SELECT * FROM users WHERE id = ?", (uid,)).fetchone()
+    user_skills_rows = conn.execute("SELECT skill_name FROM skills WHERE user_id = ?", (uid,)).fetchall()
+    user_skills = [s["skill_name"] for s in user_skills_rows]
+    user_skills_lower = {s.lower() for s in user_skills}
+    conn.close()
+
+    branch_param = request.args.get("branch", "").lower()
+    user_course = ((user["course"] or "") + " " + (user["branch"] or "")).lower()
+
+    if not branch_param:
+        if any(b in user_course for b in ["computer", "cse", "it", "software"]):
+            active_branch = "cse"
+        elif any(b in user_course for b in ["mech", "auto", "production"]):
+            active_branch = "mechanical"
+        elif any(b in user_course for b in ["civil", "construction"]):
+            active_branch = "civil"
+        elif any(b in user_course for b in ["electr"]):
+            active_branch = "electrical"
+        elif any(b in user_course for b in ["ece", "electron", "telecom"]):
+            active_branch = "electronics"
+        else:
+            active_branch = "cse"
+    else:
+        active_branch = branch_param
+
+    return render_template(
+        "roadmap.html",
+        user=user,
+        user_skills=user_skills,
+        user_skills_lower=user_skills_lower,
+        active_branch=active_branch
+    )
+
+
+@app.route("/resources")
+@login_required
+def resources():
+    uid = session["user_id"]
+    conn = get_db()
+    user = conn.execute("SELECT * FROM users WHERE id = ?", (uid,)).fetchone()
+    conn.close()
+
+    category = request.args.get("category", "all")
+    return render_template(
+        "resources.html",
+        user=user,
+        category=category
+    )
+
+
+# ---------------------------------------------------------
 # SAFETY & PRIVACY: REPORTING & BLOCKING
 # ---------------------------------------------------------
 
@@ -2253,4 +2360,4 @@ def admin_resolve_report(report_id):
 database.init_db()
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5000)

@@ -1,0 +1,704 @@
+{% extends "base.html" %}
+
+{% block title %}Diploma Career Roadmaps — DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="roadmap-page">
+    <!-- HERO HEADER -->
+    <div class="welcome-banner mb-4">
+        <div class="welcome-banner-content">
+            <div class="welcome-badge mb-2">
+                <i class="bi bi-signpost-split-fill text-warning me-1"></i> Polytechnic Career Navigation
+            </div>
+            <h1 class="welcome-title mb-2">Diploma Career Roadmaps</h1>
+            <p class="welcome-desc mb-0">Step-by-step career blueprints designed specifically for 3-year Polytechnic / Diploma engineering students. Master industry software, build impactful capstone projects, and choose between campus placements, government JE exams, or B.Tech lateral entry.</p>
+        </div>
+        <div class="welcome-banner-graphic d-none d-lg-flex">
+            <div class="welcome-icon-circle">
+                <i class="bi bi-compass-fill"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- BRANCH SELECTOR TABS -->
+    <div class="dashboard-card mb-4 p-3">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <span class="small text-muted fw-bold text-uppercase d-block mb-1">Select Diploma Stream</span>
+                <div class="nav nav-pills gap-2" id="branchPills">
+                    <a href="{{ url_for('roadmap', branch='cse') }}" class="btn btn-sm {% if active_branch == 'cse' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3 fw-semibold">
+                        <i class="bi bi-laptop me-1"></i> Computer Science / IT
+                    </a>
+                    <a href="{{ url_for('roadmap', branch='mechanical') }}" class="btn btn-sm {% if active_branch == 'mechanical' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3 fw-semibold">
+                        <i class="bi bi-gear-fill me-1"></i> Mechanical Engineering
+                    </a>
+                    <a href="{{ url_for('roadmap', branch='civil') }}" class="btn btn-sm {% if active_branch == 'civil' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3 fw-semibold">
+                        <i class="bi bi-building-fill me-1"></i> Civil Engineering
+                    </a>
+                    <a href="{{ url_for('roadmap', branch='electrical') }}" class="btn btn-sm {% if active_branch == 'electrical' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3 fw-semibold">
+                        <i class="bi bi-lightning-charge-fill me-1"></i> Electrical Engineering
+                    </a>
+                    <a href="{{ url_for('roadmap', branch='electronics') }}" class="btn btn-sm {% if active_branch == 'electronics' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3 fw-semibold">
+                        <i class="bi bi-cpu-fill me-1"></i> Electronics & Comm
+                    </a>
+                </div>
+            </div>
+            <a href="{{ url_for('ai_assistant') }}" class="btn btn-sm btn-outline-primary rounded-pill">
+                <i class="bi bi-stars me-1"></i> Ask AI for Custom Guidance
+            </a>
+        </div>
+    </div>
+
+    <!-- BRANCH CONTENT -->
+    {% if active_branch == 'cse' %}
+    <!-- ========================================== -->
+    <!-- COMPUTER SCIENCE / IT ROADMAP              -->
+    <!-- ========================================== -->
+    <div class="row g-4 mb-4">
+        <!-- Overview Card -->
+        <div class="col-lg-8">
+            <div class="dashboard-card p-4 h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="stat-icon blue">
+                        <i class="bi bi-code-slash fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">Diploma in Computer Science & Information Technology</h4>
+                        <small class="text-muted">Target Roles: Junior Software Engineer, Web Developer, Database Administrator, QA Analyst</small>
+                    </div>
+                </div>
+                <p class="text-secondary small mb-3">
+                    Polytechnic CSE students have a distinct advantage in practical coding and rapid application development. Moving beyond basic textbook syntax into modern web frameworks, version control, and problem-solving guarantees superior placement opportunities.
+                </p>
+
+                <!-- ROADMAP STAGES -->
+                <div class="roadmap-timeline mt-4">
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 1</div>
+                        <h6 class="fw-bold mb-1">Semester 1-2: Programming Foundations & CS Basics</h6>
+                        <p class="small text-muted mb-2">Master structured problem solving and algorithmic logic before touching frameworks.</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-dark border">C / C++ Foundations</span>
+                            <span class="badge bg-light text-dark border">OOPs Concepts</span>
+                            <span class="badge bg-light text-dark border">Data Structures Basics</span>
+                            <span class="badge bg-light text-dark border">Linux Terminal Basics</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 2</div>
+                        <h6 class="fw-bold mb-1">Semester 3-4: Web Architecture & Practical Database Mastery</h6>
+                        <p class="small text-muted mb-2">Build dynamic database-driven applications. Master Git and team collaboration.</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-dark border">Python / JavaScript</span>
+                            <span class="badge bg-light text-dark border">SQL & Relational DBs (SQLite/PostgreSQL)</span>
+                            <span class="badge bg-light text-dark border">Flask / Node.js</span>
+                            <span class="badge bg-light text-dark border">Git & GitHub</span>
+                            <span class="badge bg-light text-dark border">RESTful APIs</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 3</div>
+                        <h6 class="fw-bold mb-1">Semester 5: High-Impact Final Year Capstone Project</h6>
+                        <p class="small text-muted mb-2">Build a deployable full-stack application solving a real community or industrial problem.</p>
+                        <div class="bg-slate-50 p-3 rounded border small mb-2">
+                            <strong>Recommended Project Ideas:</strong>
+                            <ul class="mb-0 mt-1 ps-3 text-secondary">
+                                <li>Campus Placement & Internship Tracking Portal (Flask + SQLite/PostgreSQL)</li>
+                                <li>Automated Lab Inventory & Equipment Booking System</li>
+                                <li>AI Document & Exam Paper Summarizer for Diploma Students</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 4</div>
+                        <h6 class="fw-bold mb-1">Semester 6: Apprenticeship, NATS & Career Launch</h6>
+                        <p class="small text-muted mb-2">Target campus drives, register for NATS portal apprenticeship, or prepare for B.Tech lateral entry.</p>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="p-2 rounded border bg-light small">
+                                    <strong class="text-primary d-block mb-1"><i class="bi bi-briefcase me-1"></i> Industry Route</strong>
+                                    Software Trainee, IT Support, TCS Ninja / Infosys Diploma Trainee, Startup Web Dev.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-2 rounded border bg-light small">
+                                    <strong class="text-success d-block mb-1"><i class="bi bi-mortarboard me-1"></i> Higher Studies (LEET)</strong>
+                                    Direct 2nd-year B.Tech in CSE through BCECE LE (Bihar), WBJEE JELET, UPSEE LEET.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills Checklist Sidebar -->
+        <div class="col-lg-4">
+            <div class="dashboard-card p-4 mb-4">
+                <h6 class="fw-bold mb-2"><i class="bi bi-check2-circle text-primary me-2"></i>CSE Skills Checklist</h6>
+                <p class="small text-muted mb-3">Add these industry-standard skills to your DiplomaConnect profile:</p>
+
+                {% set cse_skills = ["Python", "JavaScript", "SQL", "Git & GitHub", "HTML5 & CSS3", "Data Structures", "Linux", "Flask", "RESTful APIs"] %}
+                <div class="d-flex flex-column gap-2">
+                    {% for sk in cse_skills %}
+                    <div class="d-flex align-items-center justify-content-between p-2 rounded border {% if sk|lower in user_skills_lower %}bg-success-subtle border-success-subtle{% else %}bg-slate-50{% endif %}">
+                        <span class="small fw-medium {% if sk|lower in user_skills_lower %}text-success fw-bold{% else %}text-dark{% endif %}">
+                            {% if sk|lower in user_skills_lower %}<i class="bi bi-check-circle-fill me-1"></i>{% endif %}
+                            {{ sk }}
+                        </span>
+                        {% if sk|lower in user_skills_lower %}
+                            <span class="badge bg-success text-white" style="font-size: 0.68rem;">Added</span>
+                        {% else %}
+                            <form action="{{ url_for('add_skill') }}" method="POST" class="m-0">
+                                <input type="hidden" name="skill_name" value="{{ sk }}">
+                                <input type="hidden" name="category" value="Technical">
+                                <input type="hidden" name="redirect_to" value="{{ url_for('roadmap', branch='cse') }}">
+                                <button type="submit" class="btn btn-xs btn-outline-primary py-0 px-2 rounded-pill" style="font-size: 0.72rem;">
+                                    + Add
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Key Recruiters -->
+            <div class="dashboard-card p-4">
+                <h6 class="fw-bold mb-2"><i class="bi bi-buildings text-primary me-2"></i>Top Recruiters</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-light text-dark border p-2">TCS (Diploma Trainee)</span>
+                    <span class="badge bg-light text-dark border p-2">Wipro Work Integrated</span>
+                    <span class="badge bg-light text-dark border p-2">Infosys BPO/IT</span>
+                    <span class="badge bg-light text-dark border p-2">Tech Mahindra</span>
+                    <span class="badge bg-light text-dark border p-2">L&T Infotech</span>
+                    <span class="badge bg-light text-dark border p-2">NIC / CDAC Projects</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% elif active_branch == 'mechanical' %}
+    <!-- ========================================== -->
+    <!-- MECHANICAL ENGINEERING ROADMAP             -->
+    <!-- ========================================== -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="dashboard-card p-4 h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="stat-icon purple">
+                        <i class="bi bi-gear-wide-connected fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">Diploma in Mechanical Engineering</h4>
+                        <small class="text-muted">Target Roles: Junior Engineer (JE), CAD Drafter, Quality Control Inspector, CNC Programmer, Maintenance Supervisor</small>
+                    </div>
+                </div>
+                <p class="text-secondary small mb-3">
+                    Mechanical diploma graduates are the backbone of production, fabrication, and automotive industries. Combining 2D/3D CAD proficiency with practical workshop and CNC exposure opens doors across state public sector units (PSUs) and multinational automotive plants.
+                </p>
+
+                <!-- ROADMAP STAGES -->
+                <div class="roadmap-timeline mt-4">
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 1</div>
+                        <h6 class="fw-bold mb-1">Semester 1-2: Workshop Practice & Engineering Mechanics</h6>
+                        <p class="small text-muted mb-2">Hands-on lathe machining, welding, carpentry, and fundamental engineering drawing.</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-dark border">Engineering Drawing & Projection</span>
+                            <span class="badge bg-light text-dark border">Workshop Technology</span>
+                            <span class="badge bg-light text-dark border">Applied Mechanics</span>
+                            <span class="badge bg-light text-dark border">Material Science</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 2</div>
+                        <h6 class="fw-bold mb-1">Semester 3-4: Design Software & Thermal Engineering</h6>
+                        <p class="small text-muted mb-2">Master digital drafting and 3D modeling tools required by industrial design departments.</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-dark border">AutoCAD 2D/3D</span>
+                            <span class="badge bg-light text-dark border">SolidWorks / CATIA</span>
+                            <span class="badge bg-light text-dark border">Thermodynamics & IC Engines</span>
+                            <span class="badge bg-light text-dark border">Fluid Mechanics & Hydraulics</span>
+                            <span class="badge bg-light text-dark border">Geometric Dimensioning & Tolerancing (GD&T)</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 3</div>
+                        <h6 class="fw-bold mb-1">Semester 5: Advanced Machining & Capstone Fabrication</h6>
+                        <p class="small text-muted mb-2">Fabricate a working mechanical prototype incorporating automation or energy efficiency.</p>
+                        <div class="bg-slate-50 p-3 rounded border small mb-2">
+                            <strong>Recommended Project Ideas:</strong>
+                            <ul class="mb-0 mt-1 ps-3 text-secondary">
+                                <li>Pneumatic Sheet Metal Cutting & Bending Machine</li>
+                                <li>Solar Powered Agricultural Weeder / Spraying Mechanism</li>
+                                <li>Automated Multi-Spindle Drilling Machine Attachment</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 4</div>
+                        <h6 class="fw-bold mb-1">Semester 6: Career Pathways (Govt JE vs Automotive/Manufacturing)</h6>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="p-2 rounded border bg-light small">
+                                    <strong class="text-primary d-block mb-1"><i class="bi bi-award me-1"></i> Competitive Govt JE</strong>
+                                    SSC JE (Mechanical), RRB JE (Indian Railways Workshops & Loco Sheds), DRDO CEPTAM, ISRO Technician.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-2 rounded border bg-light small">
+                                    <strong class="text-success d-block mb-1"><i class="bi bi-buildings me-1"></i> Industry / Apprenticeship</strong>
+                                    Tata Motors, Hero MotoCorp, Maruti Suzuki vendors, L&T Manufacturing, NATS Apprentice.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="dashboard-card p-4 mb-4">
+                <h6 class="fw-bold mb-2"><i class="bi bi-check2-circle text-primary me-2"></i>Mechanical Skills Checklist</h6>
+                <p class="small text-muted mb-3">Add these industry-standard skills to your profile:</p>
+
+                {% set mech_skills = ["AutoCAD 2D/3D", "SolidWorks", "CNC Programming", "Thermodynamics", "Industrial Safety", "GD&T", "Quality Inspection", "Hydraulics & Pneumatics"] %}
+                <div class="d-flex flex-column gap-2">
+                    {% for sk in mech_skills %}
+                    <div class="d-flex align-items-center justify-content-between p-2 rounded border {% if sk|lower in user_skills_lower %}bg-success-subtle border-success-subtle{% else %}bg-slate-50{% endif %}">
+                        <span class="small fw-medium {% if sk|lower in user_skills_lower %}text-success fw-bold{% else %}text-dark{% endif %}">
+                            {% if sk|lower in user_skills_lower %}<i class="bi bi-check-circle-fill me-1"></i>{% endif %}
+                            {{ sk }}
+                        </span>
+                        {% if sk|lower in user_skills_lower %}
+                            <span class="badge bg-success text-white" style="font-size: 0.68rem;">Added</span>
+                        {% else %}
+                            <form action="{{ url_for('add_skill') }}" method="POST" class="m-0">
+                                <input type="hidden" name="skill_name" value="{{ sk }}">
+                                <input type="hidden" name="category" value="Technical">
+                                <input type="hidden" name="redirect_to" value="{{ url_for('roadmap', branch='mechanical') }}">
+                                <button type="submit" class="btn btn-xs btn-outline-primary py-0 px-2 rounded-pill" style="font-size: 0.72rem;">
+                                    + Add
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="dashboard-card p-4">
+                <h6 class="fw-bold mb-2"><i class="bi bi-buildings text-primary me-2"></i>Top Recruiters</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-light text-dark border p-2">Tata Motors</span>
+                    <span class="badge bg-light text-dark border p-2">BHEL</span>
+                    <span class="badge bg-light text-dark border p-2">Indian Railways (RRB JE)</span>
+                    <span class="badge bg-light text-dark border p-2">Hero MotoCorp</span>
+                    <span class="badge bg-light text-dark border p-2">L&T Heavy Engineering</span>
+                    <span class="badge bg-light text-dark border p-2">SAIL / Jindal Steel</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% elif active_branch == 'civil' %}
+    <!-- ========================================== -->
+    <!-- CIVIL ENGINEERING ROADMAP                  -->
+    <!-- ========================================== -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="dashboard-card p-4 h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="stat-icon green">
+                        <i class="bi bi-building fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">Diploma in Civil Engineering</h4>
+                        <small class="text-muted">Target Roles: Junior Engineer (JE), Site Supervisor, Quantity Surveyor, Billing Engineer, Structural Draftsman</small>
+                    </div>
+                </div>
+                <p class="text-secondary small mb-3">
+                    Civil diploma engineers have massive opportunities in public infrastructure (roads, bridges, irrigation, smart cities). Mastering modern field surveying instruments (Total Station, GPS) alongside AutoCAD Civil and estimation makes you indispensable on real construction sites.
+                </p>
+
+                <!-- ROADMAP STAGES -->
+                <div class="roadmap-timeline mt-4">
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 1</div>
+                        <h6 class="fw-bold mb-1">Semester 1-2: Surveying Basics & Building Materials</h6>
+                        <p class="small text-muted mb-2">Chain surveying, plane table surveying, leveling, and testing construction materials (cement, bricks, aggregates).</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-dark border">Basic Surveying & Leveling</span>
+                            <span class="badge bg-light text-dark border">Building Construction Technology</span>
+                            <span class="badge bg-light text-dark border">Engineering Mechanics</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 2</div>
+                        <h6 class="fw-bold mb-1">Semester 3-4: Advanced Surveying & CAD Drafting</h6>
+                        <p class="small text-muted mb-2">Transition from manual sheet drafting to digital CAD drawing and electronic surveying.</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-dark border">AutoCAD Civil 2D/3D</span>
+                            <span class="badge bg-light text-dark border">Total Station & GPS Surveying</span>
+                            <span class="badge bg-light text-dark border">Concrete Technology Tests (Slump, Compressive)</span>
+                            <span class="badge bg-light text-dark border">Soil Mechanics & Foundation</span>
+                            <span class="badge bg-light text-dark border">Quantity Estimation & Costing</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 3</div>
+                        <h6 class="fw-bold mb-1">Semester 5: Structural Analysis & Capstone Design</h6>
+                        <p class="small text-muted mb-2">Complete a comprehensive structural design, highway layout, or rainwater harvesting project.</p>
+                        <div class="bg-slate-50 p-3 rounded border small mb-2">
+                            <strong>Recommended Project Ideas:</strong>
+                            <ul class="mb-0 mt-1 ps-3 text-secondary">
+                                <li>Design & Structural Estimation of G+3 Residential Apartment (AutoCAD + Excel/STAAD)</li>
+                                <li>Rainwater Harvesting & Ground Water Recharging Plan for Polytechnic Campus</li>
+                                <li>Low-Cost Rural Road Design using Plastic Waste Bitumen</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 4</div>
+                        <h6 class="fw-bold mb-1">Semester 6: Career Pathways (Public Works vs Real Estate)</h6>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="p-2 rounded border bg-light small">
+                                    <strong class="text-primary d-block mb-1"><i class="bi bi-shield-check me-1"></i> Govt SSC JE & State Departments</strong>
+                                    CPWD, MES, Border Roads Org (BRO), Bihar RCD/WRD/PHED, NBCC India.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-2 rounded border bg-light small">
+                                    <strong class="text-success d-block mb-1"><i class="bi bi-building-gear me-1"></i> Private Infrastructure</strong>
+                                    L&T Construction, Shapoorji Pallonji, Afcons, Tata Projects, Regional PMC firms.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="dashboard-card p-4 mb-4">
+                <h6 class="fw-bold mb-2"><i class="bi bi-check2-circle text-primary me-2"></i>Civil Skills Checklist</h6>
+                <p class="small text-muted mb-3">Add these industry-standard skills to your profile:</p>
+
+                {% set civil_skills = ["AutoCAD Civil", "Total Station & Surveying", "STAAD.Pro", "Concrete Technology", "Quantity Estimation", "Site Supervision", "Bar Bending Schedule (BBS)", "Billing & Measurement Books"] %}
+                <div class="d-flex flex-column gap-2">
+                    {% for sk in civil_skills %}
+                    <div class="d-flex align-items-center justify-content-between p-2 rounded border {% if sk|lower in user_skills_lower %}bg-success-subtle border-success-subtle{% else %}bg-slate-50{% endif %}">
+                        <span class="small fw-medium {% if sk|lower in user_skills_lower %}text-success fw-bold{% else %}text-dark{% endif %}">
+                            {% if sk|lower in user_skills_lower %}<i class="bi bi-check-circle-fill me-1"></i>{% endif %}
+                            {{ sk }}
+                        </span>
+                        {% if sk|lower in user_skills_lower %}
+                            <span class="badge bg-success text-white" style="font-size: 0.68rem;">Added</span>
+                        {% else %}
+                            <form action="{{ url_for('add_skill') }}" method="POST" class="m-0">
+                                <input type="hidden" name="skill_name" value="{{ sk }}">
+                                <input type="hidden" name="category" value="Technical">
+                                <input type="hidden" name="redirect_to" value="{{ url_for('roadmap', branch='civil') }}">
+                                <button type="submit" class="btn btn-xs btn-outline-primary py-0 px-2 rounded-pill" style="font-size: 0.72rem;">
+                                    + Add
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="dashboard-card p-4">
+                <h6 class="fw-bold mb-2"><i class="bi bi-buildings text-primary me-2"></i>Top Employers</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-light text-dark border p-2">L&T Construction</span>
+                    <span class="badge bg-light text-dark border p-2">CPWD / NBCC</span>
+                    <span class="badge bg-light text-dark border p-2">Bihar RCD / WRD</span>
+                    <span class="badge bg-light text-dark border p-2">Afcons Infrastructure</span>
+                    <span class="badge bg-light text-dark border p-2">NHAI Contractors</span>
+                    <span class="badge bg-light text-dark border p-2">Dilip Buildcon</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% elif active_branch == 'electrical' %}
+    <!-- ========================================== -->
+    <!-- ELECTRICAL ENGINEERING ROADMAP             -->
+    <!-- ========================================== -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="dashboard-card p-4 h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="stat-icon orange">
+                        <i class="bi bi-lightning-charge-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">Diploma in Electrical Engineering</h4>
+                        <small class="text-muted">Target Roles: Substation Operator, Junior Engineer (JE), PLC Programmer, Solar PV Technician, Electrical Maintenance Officer</small>
+                    </div>
+                </div>
+                <p class="text-secondary small mb-3">
+                    Electrical engineering spans conventional power generation/distribution, renewable solar energy, and modern factory automation. State electricity boards (DISCOMs), Indian Railways traction systems, and solar EPC companies have high annual recruitment for polytechnic diploma holders.
+                </p>
+
+                <!-- ROADMAP STAGES -->
+                <div class="roadmap-timeline mt-4">
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 1</div>
+                        <h6 class="fw-bold mb-1">Semester 1-2: Electrical Circuits & Basic Machines</h6>
+                        <p class="small text-muted mb-2">DC/AC circuits, Kirchhoff's laws, magnetic circuits, transformers, and electrical laboratory safety standards.</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-dark border">Basic Electrical Engineering</span>
+                            <span class="badge bg-light text-dark border">Electrical Circuit Theory</span>
+                            <span class="badge bg-light text-dark border">Transformers & DC Machines</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 2</div>
+                        <h6 class="fw-bold mb-1">Semester 3-4: Power Systems, Automation & Simulation</h6>
+                        <p class="small text-muted mb-2">Master industrial automation controls and power generation, transmission, and switchgear protection.</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-dark border">PLC & SCADA Basics</span>
+                            <span class="badge bg-light text-dark border">MATLAB / Simulink</span>
+                            <span class="badge bg-light text-dark border">Switchgear & Protection</span>
+                            <span class="badge bg-light text-dark border">Substation Operations (33/11 kV)</span>
+                            <span class="badge bg-light text-dark border">Solar PV System Design</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 3</div>
+                        <h6 class="fw-bold mb-1">Semester 5: Renewable Energy & Capstone Project</h6>
+                        <p class="small text-muted mb-2">Build a functioning energy conservation, solar tracking, or smart monitoring hardware model.</p>
+                        <div class="bg-slate-50 p-3 rounded border small mb-2">
+                            <strong>Recommended Project Ideas:</strong>
+                            <ul class="mb-0 mt-1 ps-3 text-secondary">
+                                <li>Dual-Axis Automatic Solar Tracking System with Arduino</li>
+                                <li>IoT-Based Transformer Health & Temperature Monitoring System</li>
+                                <li>PLC Automated Conveyor Sorting and Packaging Mechanism</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 4</div>
+                        <h6 class="fw-bold mb-1">Semester 6: Career Pathways (State DISCOMs vs Automation)</h6>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="p-2 rounded border bg-light small">
+                                    <strong class="text-primary d-block mb-1"><i class="bi bi-lightning-charge me-1"></i> Power DISCOMs & Railways</strong>
+                                    BSPHCL (Bihar Power Holding), PGCIL, NTPC, Indian Railways (RRB JE Traction & Loco).
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-2 rounded border bg-light small">
+                                    <strong class="text-success d-block mb-1"><i class="bi bi-sun me-1"></i> Solar & Industrial Automation</strong>
+                                    Tata Power Solar, Adani Solar, Schneider Electric, Siemens Drive Systems.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="dashboard-card p-4 mb-4">
+                <h6 class="fw-bold mb-2"><i class="bi bi-check2-circle text-primary me-2"></i>Electrical Skills Checklist</h6>
+                <p class="small text-muted mb-3">Add these industry-standard skills to your profile:</p>
+
+                {% set ee_skills = ["PLC & SCADA", "Substation Operations", "MATLAB", "Circuit Simulation", "Solar PV Design", "Electrical Wiring", "Switchgear & Relays", "Motor Control Circuits"] %}
+                <div class="d-flex flex-column gap-2">
+                    {% for sk in ee_skills %}
+                    <div class="d-flex align-items-center justify-content-between p-2 rounded border {% if sk|lower in user_skills_lower %}bg-success-subtle border-success-subtle{% else %}bg-slate-50{% endif %}">
+                        <span class="small fw-medium {% if sk|lower in user_skills_lower %}text-success fw-bold{% else %}text-dark{% endif %}">
+                            {% if sk|lower in user_skills_lower %}<i class="bi bi-check-circle-fill me-1"></i>{% endif %}
+                            {{ sk }}
+                        </span>
+                        {% if sk|lower in user_skills_lower %}
+                            <span class="badge bg-success text-white" style="font-size: 0.68rem;">Added</span>
+                        {% else %}
+                            <form action="{{ url_for('add_skill') }}" method="POST" class="m-0">
+                                <input type="hidden" name="skill_name" value="{{ sk }}">
+                                <input type="hidden" name="category" value="Technical">
+                                <input type="hidden" name="redirect_to" value="{{ url_for('roadmap', branch='electrical') }}">
+                                <button type="submit" class="btn btn-xs btn-outline-primary py-0 px-2 rounded-pill" style="font-size: 0.72rem;">
+                                    + Add
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="dashboard-card p-4">
+                <h6 class="fw-bold mb-2"><i class="bi bi-buildings text-primary me-2"></i>Key Employers</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-light text-dark border p-2">BSPHCL (State Power)</span>
+                    <span class="badge bg-light text-dark border p-2">Indian Railways</span>
+                    <span class="badge bg-light text-dark border p-2">Tata Power Solar</span>
+                    <span class="badge bg-light text-dark border p-2">PGCIL (Power Grid)</span>
+                    <span class="badge bg-light text-dark border p-2">Havells / Schneider</span>
+                    <span class="badge bg-light text-dark border p-2">NTPC</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% elif active_branch == 'electronics' %}
+    <!-- ========================================== -->
+    <!-- ELECTRONICS & COMMUNICATION ROADMAP       -->
+    <!-- ========================================== -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="dashboard-card p-4 h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="stat-icon blue">
+                        <i class="bi bi-cpu fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">Diploma in Electronics & Communication Engineering</h4>
+                        <small class="text-muted">Target Roles: Embedded Systems Trainee, PCB Design Technician, IoT Field Engineer, Telecom RF Technician, Hardware Quality Inspector</small>
+                    </div>
+                </div>
+                <p class="text-secondary small mb-3">
+                    ECE connects hardware electronics with smart software intelligence. With India expanding semiconductor manufacturing, EV automotive electronics, and 5G telecommunication networks, diploma engineers with microcontrollers, Arduino/ESP32, and PCB design skills have unprecedented career avenues.
+                </p>
+
+                <!-- ROADMAP STAGES -->
+                <div class="roadmap-timeline mt-4">
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 1</div>
+                        <h6 class="fw-bold mb-1">Semester 1-2: Analog & Digital Electronics Foundations</h6>
+                        <p class="small text-muted mb-2">Semiconductor diodes, transistors, logic gates, Boolean algebra, op-amps, and soldering lab drills.</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-dark border">Electronic Devices & Circuits (EDC)</span>
+                            <span class="badge bg-light text-dark border">Digital Logic Design</span>
+                            <span class="badge bg-light text-dark border">Soldering & Breadboard Prototyping</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 2</div>
+                        <h6 class="fw-bold mb-1">Semester 3-4: Microcontrollers, Embedded C & PCB CAD</h6>
+                        <p class="small text-muted mb-2">Move to programmable chips (8051, ATmega, ESP32) and schematic PCB design software (KiCAD/EasyEDA).</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-light text-dark border">Embedded C / Arduino</span>
+                            <span class="badge bg-light text-dark border">KiCAD / PCB Designing</span>
+                            <span class="badge bg-light text-dark border">Communication Systems (Analog/Digital)</span>
+                            <span class="badge bg-light text-dark border">Sensors & Actuators Interfacing</span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 3</div>
+                        <h6 class="fw-bold mb-1">Semester 5: Connected IoT & Capstone Electronics Prototype</h6>
+                        <p class="small text-muted mb-2">Design an IoT device reporting sensor telemetry to a web or cloud dashboard via MQTT/HTTP.</p>
+                        <div class="bg-slate-50 p-3 rounded border small mb-2">
+                            <strong>Recommended Project Ideas:</strong>
+                            <ul class="mb-0 mt-1 ps-3 text-secondary">
+                                <li>Smart Smart Agriculture Soil Health & Irrigation System (ESP32 + Sensors)</li>
+                                <li>Wireless Patient ECG & Heartbeat Telemetry Monitor</li>
+                                <li>RFID & Biometric Attendance Logging System with SQLite Sync</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="timeline-step mb-4">
+                        <div class="step-badge">Stage 4</div>
+                        <h6 class="fw-bold mb-1">Semester 6: Career Pathways (Hardware Tech vs Telecom)</h6>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="p-2 rounded border bg-light small">
+                                    <strong class="text-primary d-block mb-1"><i class="bi bi-broadcast me-1"></i> Telecom & Public Sector</strong>
+                                    BSNL, BEL (Bharat Electronics), ECIL, ISRO/DRDO Technical Assistant, Airtel/Jio 5G operations.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-2 rounded border bg-light small">
+                                    <strong class="text-success d-block mb-1"><i class="bi bi-cpu-fill me-1"></i> Hardware & EV Manufacturing</strong>
+                                    Foxconn, Dixon Technologies, Havells Electronics, Tata Electronics Semiconductor Fab.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="dashboard-card p-4 mb-4">
+                <h6 class="fw-bold mb-2"><i class="bi bi-check2-circle text-primary me-2"></i>ECE Skills Checklist</h6>
+                <p class="small text-muted mb-3">Add these industry-standard skills to your profile:</p>
+
+                {% set ece_skills = ["Embedded C / Arduino", "PCB Design", "IoT Protocols", "Microcontrollers", "Digital Signal Processing", "VLSI Basics", "Soldering & Hardware Debugging", "Sensor Interfacing"] %}
+                <div class="d-flex flex-column gap-2">
+                    {% for sk in ece_skills %}
+                    <div class="d-flex align-items-center justify-content-between p-2 rounded border {% if sk|lower in user_skills_lower %}bg-success-subtle border-success-subtle{% else %}bg-slate-50{% endif %}">
+                        <span class="small fw-medium {% if sk|lower in user_skills_lower %}text-success fw-bold{% else %}text-dark{% endif %}">
+                            {% if sk|lower in user_skills_lower %}<i class="bi bi-check-circle-fill me-1"></i>{% endif %}
+                            {{ sk }}
+                        </span>
+                        {% if sk|lower in user_skills_lower %}
+                            <span class="badge bg-success text-white" style="font-size: 0.68rem;">Added</span>
+                        {% else %}
+                            <form action="{{ url_for('add_skill') }}" method="POST" class="m-0">
+                                <input type="hidden" name="skill_name" value="{{ sk }}">
+                                <input type="hidden" name="category" value="Technical">
+                                <input type="hidden" name="redirect_to" value="{{ url_for('roadmap', branch='electronics') }}">
+                                <button type="submit" class="btn btn-xs btn-outline-primary py-0 px-2 rounded-pill" style="font-size: 0.72rem;">
+                                    + Add
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="dashboard-card p-4">
+                <h6 class="fw-bold mb-2"><i class="bi bi-buildings text-primary me-2"></i>Top Recruiters</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-light text-dark border p-2">Bharat Electronics (BEL)</span>
+                    <span class="badge bg-light text-dark border p-2">ECIL</span>
+                    <span class="badge bg-light text-dark border p-2">Dixon Technologies</span>
+                    <span class="badge bg-light text-dark border p-2">Foxconn India</span>
+                    <span class="badge bg-light text-dark border p-2">Tata Electronics</span>
+                    <span class="badge bg-light text-dark border p-2">ISRO (Technician)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- GENERAL DIPLOMA ADVICE FOOTER -->
+    <div class="dashboard-card p-4 bg-slate-50 border">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h5 class="fw-bold mb-1"><i class="bi bi-lightbulb text-warning me-2"></i>Need Help Choosing Between B.Tech Lateral Entry or Jobs?</h5>
+                <p class="small text-muted mb-0">Use our AI Career Assistant to receive personalized guidance tailored to your current semester, CGPA, and specific state polytechnic curriculum.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a href="{{ url_for('ai_assistant') }}" class="btn btn-primary fw-semibold px-4 rounded-pill">
+                    <i class="bi bi-chat-dots-fill me-1"></i> Consult AI Assistant
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

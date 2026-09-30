@@ -48,16 +48,62 @@
         </form>
     </div>
 
+    <!-- BRANCH / STREAM QUICK FILTERS -->
+    <div class="dashboard-card mb-3 p-3">
+        <div class="d-flex align-items-center flex-wrap gap-2">
+            <span class="small fw-bold text-muted text-uppercase me-1" style="letter-spacing:.04em; white-space:nowrap;">
+                <i class="bi bi-funnel-fill me-1 text-primary"></i>Branch:
+            </span>
+            <button type="button" class="branch-pill active" data-filter="all">All Branches</button>
+            <button type="button" class="branch-pill" data-filter="cse"><i class="bi bi-laptop me-1"></i>Computer Science / IT</button>
+            <button type="button" class="branch-pill" data-filter="mechanical"><i class="bi bi-gear-fill me-1"></i>Mechanical</button>
+            <button type="button" class="branch-pill" data-filter="civil"><i class="bi bi-building-fill me-1"></i>Civil</button>
+            <button type="button" class="branch-pill" data-filter="electrical"><i class="bi bi-lightning-charge-fill me-1"></i>Electrical</button>
+            <button type="button" class="branch-pill" data-filter="electronics"><i class="bi bi-cpu-fill me-1"></i>Electronics</button>
+            <button type="button" class="branch-pill" data-filter="general"><i class="bi bi-people-fill me-1"></i>All / General</button>
+        </div>
+    </div>
+
     <!-- EVENTS GRID -->
-    <div class="row g-3">
+    <div class="row g-3" id="eventsList">
         {% for ev in events %}
-        <div class="col-md-6">
+        {# --- Infer branch from title + description + organizer text --- #}
+        {% set ns = namespace(branch='general') %}
+        {% set bt = (ev['title'] + ' ' + (ev['description'] or '') + ' ' + (ev['organizer'] or '')) | lower %}
+        {% if 'python' in bt or 'web dev' in bt or 'flask' in bt or 'javascript' in bt or 'software' in bt or 'computer' in bt or 'cse' in bt or 'database' in bt or 'html' in bt or 'coding' in bt %}
+            {% set ns.branch = 'cse' %}
+        {% elif 'autocad' in bt or 'mechanical' in bt or 'solidworks' in bt or 'cnc' in bt or 'manufacturing' in bt or '3d model' in bt %}
+            {% set ns.branch = 'mechanical' %}
+        {% elif 'civil' in bt or 'construction' in bt or 'surveying' in bt or 'site' in bt or 'structural' in bt %}
+            {% set ns.branch = 'civil' %}
+        {% elif 'electrical' in bt or 'plc' in bt or 'scada' in bt or 'substation' in bt or 'power system' in bt %}
+            {% set ns.branch = 'electrical' %}
+        {% elif 'electronics' in bt or 'embedded' in bt or 'iot' in bt or 'pcb' in bt or 'microcontroller' in bt or 'arduino' in bt %}
+            {% set ns.branch = 'electronics' %}
+        {% endif %}
+        <div class="col-md-6" data-branch="{{ ns.branch }}">
             <div class="dashboard-card h-100 p-4 d-flex flex-column justify-content-between event-card">
                 <div>
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="badge {% if ev['event_type'] == 'online' %}bg-info-subtle text-info border border-info-subtle{% else %}bg-success-subtle text-success border border-success-subtle{% endif %} text-uppercase px-2 py-1">
-                            <i class="bi {% if ev['event_type'] == 'online' %}bi-camera-video{% else %}bi-geo-alt{% endif %} me-1"></i>{{ ev['event_type'] }}
-                        </span>
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <span class="badge {% if ev['event_type'] == 'online' %}bg-info-subtle text-info border border-info-subtle{% else %}bg-success-subtle text-success border border-success-subtle{% endif %} text-uppercase px-2 py-1">
+                                <i class="bi {% if ev['event_type'] == 'online' %}bi-camera-video{% else %}bi-geo-alt{% endif %} me-1"></i>{{ ev['event_type'] }}
+                            </span>
+                            {# Branch badge — derived from content, not invented #}
+                            {% if ns.branch == 'cse' %}
+                                <span class="branch-tag branch-tag-cse"><i class="bi bi-laptop me-1"></i>CSE / IT</span>
+                            {% elif ns.branch == 'mechanical' %}
+                                <span class="branch-tag branch-tag-mechanical"><i class="bi bi-gear-fill me-1"></i>Mechanical</span>
+                            {% elif ns.branch == 'civil' %}
+                                <span class="branch-tag branch-tag-civil"><i class="bi bi-building-fill me-1"></i>Civil</span>
+                            {% elif ns.branch == 'electrical' %}
+                                <span class="branch-tag branch-tag-electrical"><i class="bi bi-lightning-charge-fill me-1"></i>Electrical</span>
+                            {% elif ns.branch == 'electronics' %}
+                                <span class="branch-tag branch-tag-electronics"><i class="bi bi-cpu-fill me-1"></i>Electronics</span>
+                            {% else %}
+                                <span class="branch-tag branch-tag-general"><i class="bi bi-people-fill me-1"></i>All Branches</span>
+                            {% endif %}
+                        </div>
                         <span class="badge bg-light text-dark border">
                             <i class="bi bi-people me-1"></i>{{ ev['attendee_count'] }} Attending
                         </span>
@@ -69,7 +115,7 @@
                         </a>
                     </h5>
                     <div class="text-muted small mb-2">By <strong>{{ ev['organizer'] }}</strong></div>
-                    
+
                     <p class="text-secondary small mb-3 text-truncate-2" style="max-height: 44px; overflow: hidden;">
                         {{ ev['description'] }}
                     </p>
@@ -106,6 +152,13 @@
             </div>
         </div>
         {% endfor %}
+    </div>
+
+    <!-- JS-driven "no branch results" message (hidden by default) -->
+    <div id="noBranchResults" class="dashboard-card text-center py-4 mt-2" style="display:none !important;">
+        <i class="bi bi-funnel text-muted fs-2 mb-2 d-block"></i>
+        <h6 class="text-muted">No events match this branch filter.</h6>
+        <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="clearBranchFilterEvents">Show All Events</button>
     </div>
 </div>
 {% endblock %}

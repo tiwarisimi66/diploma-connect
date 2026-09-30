@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}Polytechnic Learning & Resources Hub — DiplomaConnect{% endblock %}
+
+{% block content %}
+<div class="resources-page">
+    <!-- HERO HEADER -->
+    <div class="welcome-banner mb-4">
+        <div class="welcome-banner-content">
+            <div class="welcome-badge mb-2">
+                <i class="bi bi-journal-bookmark-fill text-warning me-1"></i> Polytechnic Knowledge Base
+            </div>
+            <h1 class="welcome-title mb-2">Learning & Resources Hub</h1>
+            <p class="welcome-desc mb-0">High-yield study guides, competitive examination blueprints (SSC JE, RRB JE, State LEET), vetted capstone project repositories, and placement readiness templates curated specifically for diploma students.</p>
+        </div>
+        <div class="welcome-banner-graphic d-none d-lg-flex">
+            <div class="welcome-icon-circle">
+                <i class="bi bi-book-half"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- CATEGORY FILTER PILLS -->
+    <div class="dashboard-card mb-4 p-3">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ url_for('resources', category='all') }}" class="btn btn-sm {% if category == 'all' or not category %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3 fw-semibold">
+                    <i class="bi bi-grid-fill me-1"></i> All Resources
+                </a>
+                <a href="{{ url_for('resources', category='exams') }}" class="btn btn-sm {% if category == 'exams' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3 fw-semibold">
+                    <i class="bi bi-award-fill me-1"></i> Exams (SSC JE & LEET)
+                </a>
+                <a href="{{ url_for('resources', category='tools') }}" class="btn btn-sm {% if category == 'tools' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3 fw-semibold">
+                    <i class="bi bi-tools me-1"></i> Software & Tools
+                </a>
+                <a href="{{ url_for('resources', category='projects') }}" class="btn btn-sm {% if category == 'projects' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3 fw-semibold">
+                    <i class="bi bi-folder-fill me-1"></i> Capstone Projects
+                </a>
+                <a href="{{ url_for('resources', category='career') }}" class="btn btn-sm {% if category == 'career' %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3 fw-semibold">
+                    <i class="bi bi-file-earmark-person-fill me-1"></i> Resume & NATS Guide
+                </a>
+            </div>
+
+            <a href="{{ url_for('roadmap') }}" class="btn btn-sm btn-outline-primary rounded-pill">
+                <i class="bi bi-signpost-split me-1"></i> Explore Branch Roadmaps
+            </a>
+        </div>
+    </div>
+
+    <!-- SECTION 1: COMPETITIVE EXAMS & HIGHER STUDIES -->
+    {% if category in ['all', 'exams'] %}
+    <div class="mb-5">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <div class="stat-icon blue" style="width: 36px; height: 36px; min-width: 36px; font-size: 1rem;">
+                <i class="bi bi-award-fill"></i>
+            </div>
+            <h4 class="fw-bold mb-0">Competitive Exams & Lateral Entry Guides</h4>
+        </div>
+
+        <div class="row g-4">
+            <!-- SSC JE Card -->
+            <div class="col-md-6 col-lg-4">
+                <div class="dashboard-card h-100 p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Govt Recruitment</span>
+                            <small class="text-muted fw-bold">All India Level</small>
+                        </div>
+                        <h5 class="fw-bold mb-2">Staff Selection Commission — Junior Engineer (SSC JE)</h5>
+                        <p class="small text-secondary mb-3">
+                            The premier central government exam for 3-year diploma holders in Civil, Mechanical, and Electrical engineering. Posts include CPWD, MES, and Central Water Commission.
+                        </p>
+                        <div class="bg-slate-50 p-3 rounded border small mb-3">
+                            <div class="mb-1"><strong>Paper 1 (CBT):</strong> 200 Marks (50 Reasoning, 50 General Awareness, 100 Technical Domain)</div>
+                            <div><strong>Paper 2 (CBT Technical):</strong> 300 Marks in-depth engineering problem-solving</div>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-top">
+                        <a href="{{ url_for('ai_assistant') }}" class="btn btn-sm btn-outline-primary w-100 fw-semibold">
+                            <i class="bi bi-stars me-1"></i> Ask AI for SSC JE Strategy
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RRB JE Card -->
+            <div class="col-md-6 col-lg-4">
+                <div class="dashboard-card h-100 p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Railway Recruitment</span>
+                            <small class="text-muted fw-bold">Indian Railways</small>
+                        </div>
+                        <h5 class="fw-bold mb-2">Railway Recruitment Board — Junior Engineer (RRB JE)</h5>
+                        <p class="small text-secondary mb-3">
+                            Recruitment for Junior Engineers across railway zones in mechanical workshops, diesel/electric loco sheds, track maintenance, and signaling.
+                        </p>
+                        <div class="bg-slate-50 p-3 rounded border small mb-3">
+                            <div class="mb-1"><strong>CBT Stage 1:</strong> Math (30), Reasoning (25), General Awareness (15), General Science (30)</div>
+                            <div><strong>CBT Stage 2:</strong> 100 Marks Technical Abilities + 50 Non-Tech</div>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-top">
+                        <a href="{{ url_for('ai_assistant') }}" class="btn btn-sm btn-outline-primary w-100 fw-semibold">
+                            <i class="bi bi-stars me-1"></i> RRB JE Eligibility Tips
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- B.Tech LEET Card -->
+            <div class="col-md-6 col-lg-4">
+                <div class="dashboard-card h-100 p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-success-subtle text-success border border-success-subtle">B.Tech Lateral Entry</span>
+                            <small class="text-muted fw-bold">Direct 2nd Year</small>
+                        </div>
+                        <h5 class="fw-bold mb-2">State LEET Examinations (BCECE LE / JELET / CUET)</h5>
+                        <p class="small text-secondary mb-3">
+                            Allows polytechnic diploma holders to enter directly into the 3rd semester (2nd year) of government and top private engineering colleges for a 4-year B.Tech degree.
+                        </p>
+                        <div class="bg-slate-50 p-3 rounded border small mb-3">
+                            <div class="mb-1"><strong>Bihar BCECE LE:</strong> Engg Mechanics, Technical English, Basic Mathematics</div>
+                            <div><strong>West Bengal JELET:</strong> Mathematics, Physics, Chemistry & Engg Mechanics</div>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-top">
+                        <a href="{{ url_for('college_directory') }}" class="btn btn-sm btn-outline-primary w-100 fw-semibold">
+                            <i class="bi bi-building me-1"></i> Explore Engineering Colleges
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- SECTION 2: SOFTWARE & TOOLS -->
+    {% if category in ['all', 'tools'] %}
+    <div class="mb-5">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <div class="stat-icon purple" style="width: 36px; height: 36px; min-width: 36px; font-size: 1rem;">
+                <i class="bi bi-tools"></i>
+            </div>
+            <h4 class="fw-bold mb-0">Must-Learn Industry Software for Polytechnic Students</h4>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="dashboard-card p-3 h-100">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-compass fs-4 text-primary"></i>
+                        <h6 class="fw-bold mb-0">AutoCAD 2D & 3D</h6>
+                    </div>
+                    <p class="small text-secondary mb-2">Industry standard for Civil drafting, site plans, structural layouts, and Mechanical part projections.</p>
+                    <div class="badge bg-light text-dark border mb-2">Civil & Mechanical</div>
+                    <p class="small text-muted mb-0"><strong>Tip:</strong> Autodesk offers 100% free educational student licenses with valid diploma ID card.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="dashboard-card p-3 h-100">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-code-square fs-4 text-success"></i>
+                        <h6 class="fw-bold mb-0">Python & SQL</h6>
+                    </div>
+                    <p class="small text-secondary mb-2">Essential for Computer Science and applicable for data plotting and automation in Electrical and Mechanical.</p>
+                    <div class="badge bg-light text-dark border mb-2">CSE, IT & All Branches</div>
+                    <p class="small text-muted mb-0"><strong>Tip:</strong> Build at least 2 database-backed CRUD projects on GitHub before your final semester.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="dashboard-card p-3 h-100">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-cpu fs-4 text-warning"></i>
+                        <h6 class="fw-bold mb-0">PLC & Ladder Logic</h6>
+                    </div>
+                    <p class="small text-secondary mb-2">Programmable Logic Controllers automate factories, assembly lines, packaging plants, and substations.</p>
+                    <div class="badge bg-light text-dark border mb-2">Electrical & Electronics</div>
+                    <p class="small text-muted mb-0"><strong>Tip:</strong> Look for free MSME Tool Room or state skill development workshops in PLC & SCADA.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="dashboard-card p-3 h-100">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-git fs-4 text-danger"></i>
+                        <h6 class="fw-bold mb-0">Git & GitHub</h6>
+                    </div>
+                    <p class="small text-secondary mb-2">Version control for source code, CAD documentation, and engineering project coordination.</p>
+                    <div class="badge bg-light text-dark border mb-2">Universal Skill</div>
+                    <p class="small text-muted mb-0"><strong>Tip:</strong> Link your GitHub repository directly on your DiplomaConnect profile to impress recruiters.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- SECTION 3: CAPSTONE PROJECT BLUEPRINTS -->
+    {% if category in ['all', 'projects'] %}
+    <div class="mb-5">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <div class="stat-icon green" style="width: 36px; height: 36px; min-width: 36px; font-size: 1rem;">
+                <i class="bi bi-folder-check"></i>
+            </div>
+            <h4 class="fw-bold mb-0">Final Year Diploma Capstone Project Ideas</h4>
+        </div>
+
+        <div class="dashboard-card p-4">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" style="width: 25%;">Project Title</th>
+                            <th scope="col" style="width: 20%;">Branch</th>
+                            <th scope="col" style="width: 35%;">Key Tools / Technologies</th>
+                            <th scope="col" style="width: 20%;">Difficulty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Polytechnic Campus Grievance & Facility Portal</strong></td>
+                            <td><span class="badge bg-primary-subtle text-primary">Computer Science / IT</span></td>
+                            <td class="small text-muted">Python, Flask, SQLite, Bootstrap 5, Role-based Auth</td>
+                            <td><span class="badge bg-success">Intermediate</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pneumatic Automatic Can Crusher & Compactor</strong></td>
+                            <td><span class="badge bg-purple-subtle text-indigo" style="background: rgba(79,70,229,0.12); color: #4f46e5;">Mechanical</span></td>
+                            <td class="small text-muted">Double Acting Cylinder, Direction Control Valve, SolidWorks CAD</td>
+                            <td><span class="badge bg-info text-dark">Hands-on Lab</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Structural Analysis & Cost Estimation of G+2 School Building</strong></td>
+                            <td><span class="badge bg-success-subtle text-success">Civil Engineering</span></td>
+                            <td class="small text-muted">AutoCAD Civil, STAAD.Pro, MS Excel Quantity Estimation, BBS</td>
+                            <td><span class="badge bg-success">Intermediate</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dual-Axis Microcontroller Solar Tracker</strong></td>
+                            <td><span class="badge bg-warning-subtle text-warning-emphasis">Electrical Engineering</span></td>
+                            <td class="small text-muted">LDR Sensors, Servo Motors, Arduino Nano / Microcontroller, Solar Cell</td>
+                            <td><span class="badge bg-primary">High Impact</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>IoT Smart Agriculture Monitoring & Irrigation System</strong></td>
+                            <td><span class="badge bg-info-subtle text-info-emphasis">Electronics / ECE</span></td>
+                            <td class="small text-muted">ESP32, Soil Moisture Sensors, DHT11, Relays, Blynk/MQTT Cloud</td>
+                            <td><span class="badge bg-primary">High Impact</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- SECTION 4: RESUME & APPRENTICESHIP (NATS) TOOLKIT -->
+    {% if category in ['all', 'career'] %}
+    <div class="mb-5">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <div class="stat-icon orange" style="width: 36px; height: 36px; min-width: 36px; font-size: 1rem;">
+                <i class="bi bi-file-earmark-person-fill"></i>
+            </div>
+            <h4 class="fw-bold mb-0">Placement & NATS Apprenticeship Toolkit</h4>
+        </div>
+
+        <div class="row g-4">
+            <!-- NATS Guide Card -->
+            <div class="col-lg-6">
+                <div class="dashboard-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">National Apprenticeship Training Scheme (NATS)</h5>
+                        <span class="badge bg-danger">Govt Stipend</span>
+                    </div>
+                    <p class="small text-secondary mb-3">
+                        The Government of India's official apprenticeship portal for engineering diploma graduates. It provides a 1-year practical industry training with a mandatory monthly stipend (typically ₹8,000 to ₹12,000/month) backed by the Ministry of Education.
+                    </p>
+                    <div class="bg-slate-50 p-3 rounded border small mb-3">
+                        <strong class="d-block mb-1 text-primary">Registration Checklist:</strong>
+                        <ol class="mb-0 ps-3 text-secondary">
+                            <li>Keep final semester marksheet and Provisional Diploma Certificate ready.</li>
+                            <li>Aadhaar card linked with an active mobile number and bank account.</li>
+                            <li>Register at the official portal: <a href="https://portal.mhrdnats.gov.in" target="_blank" class="fw-bold text-primary">portal.mhrdnats.gov.in</a>.</li>
+                            <li>Search and apply for apprentice drives at PSUs like BHEL, Indian Oil, and private plants.</li>
+                        </ol>
+                    </div>
+                    <a href="{{ url_for('opportunities_list') }}" class="btn btn-sm btn-outline-primary fw-semibold">
+                        <i class="bi bi-briefcase me-1"></i> Browse Vetted Apprenticeships on DiplomaConnect
+                    </a>
+                </div>
+            </div>
+
+            <!-- Resume Checklist Card -->
+            <div class="col-lg-6">
+                <div class="dashboard-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">1-Page Polytechnic Fresher Resume Architecture</h5>
+                        <span class="badge bg-primary">Recruiter Ready</span>
+                    </div>
+                    <p class="small text-secondary mb-3">
+                        Diploma recruiters scan resumes in under 10 seconds. Keep your resume strictly to 1 page with the following clean ordering:
+                    </p>
+                    <div class="bg-slate-50 p-3 rounded border small mb-3">
+                        <ul class="list-unstyled mb-0 d-flex flex-column gap-2 text-secondary">
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i><strong>1. Contact Header:</strong> Name, Diploma Stream, Phone, Professional Email, DiplomaConnect/GitHub link.</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i><strong>2. Education:</strong> Diploma in Engineering (College, Board e.g. SBTE, CGPA/%), followed by 10th Board.</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i><strong>3. Technical Skills:</strong> Software (AutoCAD, Python, PLC), Lab Skills, Operating Systems.</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i><strong>4. Projects Portfolio:</strong> Final year project title, tools used, and individual contribution.</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i><strong>5. Industrial Training / Certifications:</strong> MSME workshops, summer internships.</li>
+                        </ul>
+                    </div>
+                    <a href="{{ url_for('profile') }}" class="btn btn-sm btn-primary fw-semibold">
+                        <i class="bi bi-person-check me-1"></i> Audit My DiplomaConnect Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

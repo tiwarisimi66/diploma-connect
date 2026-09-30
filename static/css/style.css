@@ -339,6 +339,51 @@ a:hover {
     color: var(--slate-400);
 }
 
+/* Desktop Topbar Horizontal Navigation */
+.topbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.topbar-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    border-radius: var(--radius-pill);
+    color: var(--slate-600);
+    font-size: 0.84rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.18s ease;
+}
+
+.topbar-nav-link:hover {
+    color: var(--blue-primary);
+    background: var(--slate-100);
+}
+
+.topbar-nav-link.active {
+    color: var(--blue-primary);
+    background: rgba(8, 125, 245, 0.08);
+    font-weight: 600;
+}
+
+.topbar-badge {
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: var(--radius-pill);
+    background: #f43f5e;
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .topbar-right {
     display: flex;
     align-items: center;
@@ -1093,7 +1138,7 @@ a:hover {
    ========================================================================== */
 
 .mobile-header {
-    height: 60px;
+    height: 62px;
     background: #ffffff;
     border-bottom: 1px solid var(--slate-200);
     display: flex;
@@ -1110,25 +1155,108 @@ a:hover {
     border: none;
     color: var(--slate-800);
     cursor: pointer;
-    padding: 4px;
+    padding: 6px;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-toggle-btn:hover {
+    background: var(--slate-100);
+}
+
+.mobile-logo-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--blue-primary), var(--indigo-accent));
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(8, 125, 245, 0.3);
+}
+
+.mobile-brand-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--navy-darker) !important;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.mobile-brand-title span {
+    color: var(--blue-primary) !important;
 }
 
 .mobile-icon-btn {
     padding: 6px 8px;
     border-radius: var(--radius-sm);
     color: var(--slate-700);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-icon-btn:hover {
+    background: var(--slate-100);
+    color: var(--blue-primary);
+}
+
+.mobile-avatar-img,
+.mobile-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.mobile-avatar-img {
+    object-fit: cover;
+    border: 1px solid var(--slate-200);
+}
+
+.mobile-avatar {
+    background: linear-gradient(135deg, var(--blue-primary), var(--indigo-accent));
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.78rem;
+}
+
+/* Sidebar Backdrop for Mobile Drawer */
+.sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(2px);
+    z-index: 1055;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.sidebar-backdrop.active {
+    opacity: 1;
+    visibility: visible;
 }
 
 @media (max-width: 991px) {
     .sidebar {
         transform: translateX(-100%);
         transition: transform 0.28s ease-in-out;
-        z-index: 1050;
+        z-index: 1060;
     }
 
     .sidebar.open {
         transform: translateX(0);
-        box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 0 35px rgba(0, 0, 0, 0.45);
     }
 
     .main-content {
@@ -1139,6 +1267,52 @@ a:hover {
     .page-content {
         padding: 18px 16px 36px;
     }
+}
+
+/* Roadmap Visual Timeline */
+.roadmap-timeline {
+    position: relative;
+    padding-left: 32px;
+}
+
+.roadmap-timeline::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 11px;
+    width: 2px;
+    background: var(--slate-200);
+}
+
+.timeline-step {
+    position: relative;
+}
+
+.timeline-step::before {
+    content: '';
+    position: absolute;
+    left: -32px;
+    top: 6px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--blue-primary);
+    border: 3px solid #ffffff;
+    box-shadow: 0 0 0 2px var(--blue-primary);
+}
+
+.step-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--blue-primary);
+    background: rgba(8, 125, 245, 0.1);
+    padding: 2px 10px;
+    border-radius: var(--radius-pill);
+    margin-bottom: 6px;
 }
 
 /* ==========================================================================
@@ -1431,5 +1605,120 @@ a:hover {
 @media (max-width: 991px) {
     .auth-brand, .auth-left {
         display: none;
+    }
+}
+/* ============================================================
+   BRANCH / STREAM FILTER SYSTEM — Opportunities & Events
+   Appended additively — no existing styles overridden
+   ============================================================ */
+
+/* ---- Branch pill filter buttons ---- */
+.branch-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: 999px;
+    border: 1.5px solid #d1d5db;
+    background: #ffffff;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+}
+
+.branch-pill:hover {
+    border-color: #1a56db;
+    color: #1a56db;
+    background: #eff6ff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(26,86,219,0.12);
+}
+
+.branch-pill.active {
+    background: linear-gradient(135deg, #1a56db 0%, #4338ca 100%);
+    border-color: transparent;
+    color: #ffffff;
+    box-shadow: 0 3px 10px rgba(26,86,219,0.30);
+}
+
+.branch-pill.active:hover {
+    background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
+    transform: translateY(-1px);
+}
+
+/* ---- Branch tag badges (on cards) ---- */
+.branch-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: 999px;
+    border: 1.5px solid;
+    letter-spacing: 0.01em;
+}
+
+.branch-tag-cse {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+}
+
+.branch-tag-mechanical {
+    background: #f5f3ff;
+    color: #6d28d9;
+    border-color: #ddd6fe;
+}
+
+.branch-tag-civil {
+    background: #f0fdf4;
+    color: #15803d;
+    border-color: #bbf7d0;
+}
+
+.branch-tag-electrical {
+    background: #fefce8;
+    color: #a16207;
+    border-color: #fde68a;
+}
+
+.branch-tag-electronics {
+    background: #ecfeff;
+    color: #0e7490;
+    border-color: #a5f3fc;
+}
+
+.branch-tag-general {
+    background: #f9fafb;
+    color: #6b7280;
+    border-color: #e5e7eb;
+}
+
+/* ---- Hide animation for filtered cards ---- */
+[data-branch].branch-hidden {
+    display: none !important;
+}
+
+/* ---- "No branch results" message ---- */
+#noBranchResults,
+#noBranchResultsOpps {
+    display: none;
+}
+#noBranchResults.branch-show,
+#noBranchResultsOpps.branch-show {
+    display: block !important;
+}
+
+/* ---- Responsive: scroll pill row on very small screens ---- */
+@media (max-width: 575px) {
+    .branch-pill {
+        font-size: 0.72rem;
+        padding: 0.25rem 0.65rem;
     }
 }

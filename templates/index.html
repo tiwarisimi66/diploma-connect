@@ -19,6 +19,22 @@
         </div>
     </div>
 </section>
+<div class="career-status-bar">
+    <div class="status-item">
+        <i class="bi bi-award-fill"></i>
+        Profile Rank: Top 15%
+    </div>
+
+    <div class="status-item">
+        <i class="bi bi-lightning-charge-fill"></i>
+        Skill Score: 78/100
+    </div>
+
+    <div class="status-item">
+        <i class="bi bi-people-fill"></i>
+        Network Growth: +12
+    </div>
+</div>
 
 <!-- PLATFORM METRICS -->
 <section class="stats-grid mb-4">
@@ -71,6 +87,89 @@
 <div class="dashboard-grid">
     <!-- FEED COLUMN (Left) -->
     <div class="feed-column">
+        <!-- QUICK ACTIONS TOOLBAR -->
+        <div class="dashboard-card mb-4 p-3 bg-white">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="small fw-bold text-uppercase text-muted" style="letter-spacing: 0.04em;">
+                    <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Quick Polytechnic Actions
+                </span>
+                <span class="small text-muted">Navigate key features</span>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ url_for('profile') }}" class="btn btn-sm btn-outline-primary rounded-pill fw-medium">
+                    <i class="bi bi-person-check me-1"></i> Complete Profile
+                </a>
+                <a href="{{ url_for('discover_students') }}" class="btn btn-sm btn-outline-secondary rounded-pill fw-medium">
+                    <i class="bi bi-people me-1"></i> Discover Students
+                </a>
+                <a href="{{ url_for('opportunities_list') }}" class="btn btn-sm btn-outline-success rounded-pill fw-medium">
+                    <i class="bi bi-briefcase me-1"></i> Opportunities
+                </a>
+                <a href="{{ url_for('roadmap') }}" class="btn btn-sm btn-outline-info rounded-pill fw-medium">
+                    <i class="bi bi-signpost-split me-1"></i> Career Roadmaps
+                </a>
+                <a href="{{ url_for('resources') }}" class="btn btn-sm btn-outline-dark rounded-pill fw-medium">
+                    <i class="bi bi-journal-bookmark me-1"></i> Learning Hub
+                </a>
+                <a href="{{ url_for('ai_assistant') }}" class="btn btn-sm btn-outline-warning rounded-pill fw-medium text-dark">
+                    <i class="bi bi-stars me-1"></i> AI Advisor
+                </a>
+            </div>
+        </div>
+
+        <!-- SKILL BUILDER & GAP ANALYZER WIDGET -->
+        <div class="dashboard-card mb-4 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="completion-icon-badge" style="background: rgba(8, 125, 245, 0.12); color: var(--blue-primary); width: 38px; height: 38px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Skill Builder & Gap Analysis</h6>
+                        <small class="text-muted">Targeted recommendations for <strong>{{ branch_name }}</strong></small>
+                    </div>
+                </div>
+                <a href="{{ url_for('roadmap') }}" class="btn btn-xs btn-outline-primary rounded-pill px-3 py-1 fw-semibold" style="font-size: 0.76rem;">
+                    Full Roadmap <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+
+            {% if user_skills %}
+            <div class="mb-3 pt-2">
+                <small class="text-secondary fw-semibold d-block mb-2"><i class="bi bi-check-circle-fill text-success me-1"></i> Added to Your Profile:</small>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for sk in user_skills %}
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1" style="font-size: 0.8rem; font-weight: 500;">
+                        <i class="bi bi-check me-1"></i>{{ sk }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if missing_recommended %}
+            <div class="pt-2 border-top">
+                <small class="text-secondary fw-semibold d-block mb-2"><i class="bi bi-plus-circle text-primary me-1"></i> Recommended for {{ branch_name }} (1-Click Add):</small>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for sk in missing_recommended %}
+                    <form action="{{ url_for('add_skill') }}" method="POST" class="d-inline m-0">
+                        <input type="hidden" name="skill_name" value="{{ sk }}">
+                        <input type="hidden" name="category" value="Technical">
+                        <input type="hidden" name="redirect_to" value="{{ url_for('home') }}">
+                        <button type="submit" class="btn btn-sm btn-light border text-dark fw-medium py-1 px-2 rounded-pill hover-shadow" title="Add {{ sk }} to profile">
+                            <i class="bi bi-plus text-primary fw-bold"></i> {{ sk }}
+                        </button>
+                    </form>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <div class="p-2 rounded bg-success-subtle border border-success-subtle mt-2 small text-success">
+                <i class="bi bi-patch-check-fill me-1"></i> <strong>Excellent!</strong> Your profile includes all core recommended skills for {{ branch_name }}.
+            </div>
+            {% endif %}
+        </div>
+
         <!-- PROFILE COMPLETION BAR -->
         <div class="dashboard-card mb-4 profile-completion-card p-4">
             <div class="d-flex justify-content-between align-items-center mb-2">
