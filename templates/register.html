@@ -163,68 +163,56 @@
                         </select>
                     </div>
                 </div>
-                <!-- PASSWORD -->
-<div class="form-group mb-3">
-    <label class="form-label fw-semibold text-secondary small">
-        Password <span class="text-danger">*</span>
-    </label>
-
-    <div class="input-box password-wrapper">
-        <i class="bi bi-lock"></i>
-
-        <input
-            type="password"
-            name="password"
-            id="registerPassword"
-            placeholder="Create a strong password"
-            required
-            minlength="6">
-
-        <button
-            type="button"
-            class="password-toggle"
-            onclick="togglePassword('registerPassword', this)">
-
-            <i class="bi bi-eye"></i>
-        </button>
-    </div>
-</div>
-
-<!-- CONFIRM PASSWORD -->
-<div class="form-group mb-3">
-    <label class="form-label fw-semibold text-secondary small">
-        Confirm Password <span class="text-danger">*</span>
-    </label>
-
-    <div class="input-box password-wrapper">
-        <i class="bi bi-shield-lock"></i>
-
-        <input
-            type="password"
-            name="confirm_password"
-            id="confirmPassword"
-            placeholder="Confirm your password"
-            required
-            minlength="6">
-
-        <button
-            type="button"
-            class="password-toggle"
-            onclick="togglePassword('confirmPassword', this)">
-
-            <i class="bi bi-eye"></i>
-        </button>
-    </div>
-</div>
-                    <div class="col-sm-6">
-                        <label class="form-label fw-semibold text-secondary small">Confirm Password <span class="text-danger">*</span></label>
-                        <div class="input-box password-wrapper">
-                            <i class="bi bi-shield-lock"></i>
-                            <input type="password" name="confirm_password" id="confirmPassword" placeholder="Re-enter password" required minlength="6">
-                            <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)" title="Show/Hide">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                        </div>
+            
+                <!-- Password -->
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold text-secondary small">
+                        Password <span class="text-danger">*</span>
+                    </label>
+                
+                    <div class="input-box password-wrapper">
+                        <i class="bi bi-lock"></i>
+                
+                        <input
+                            type="password"
+                            name="password"
+                            id="registerPassword"
+                            placeholder="Create a strong password"
+                            required
+                            minlength="6">
+                
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            onclick="togglePassword('registerPassword', this)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Confirm Password -->
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold text-secondary small">
+                        Confirm Password <span class="text-danger">*</span>
+                    </label>
+                
+                    <div class="input-box password-wrapper">
+                        <i class="bi bi-shield-lock"></i>
+                
+                        <input
+                            type="password"
+                            name="confirm_password"
+                            id="confirmPassword"
+                            placeholder="Re-enter password"
+                            required
+                            minlength="6">
+                
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            onclick="togglePassword('confirmPassword', this)">
+                            <i class="bi bi-eye"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -235,10 +223,13 @@
                 </div>
 
                 <!-- SUBMIT BUTTON -->
-                <button type="submit" class="auth-button">
-                    <span>Create Account</span>
-                    <i class="bi bi-arrow-right"></i>
-                </button>
+                <div class="text-center mt-4">
+                    <button type="submit" class="auth-button w-100">
+                        <span>Create Account</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+                   
             </form>
 
             <div class="auth-footer mt-4 text-center">
